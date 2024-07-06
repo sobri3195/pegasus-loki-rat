@@ -1,31 +1,27 @@
-# Loki.Rat ![Loki.Rat](https://emojipedia-us.s3.amazonaws.com/thumbs/120/twitter/120/mouse-face_1f42d.png)
+# Pegasus Loki.Rat
      
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||              (\
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||               \\
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||                ))
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||               //
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||        .-.   //  .-.
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||       / 0 \-((=-/   \
-    |||||||██▓        ▒█████      ██ ▄█▀    ██▓            ██▀███      ▄▄▄         ▄▄▄█████▓ |||||||       \      \\     /
-    |||||||▓██▒       ▒██▒  ██▒    ██▄█▒    ▓██▒           ▓██ ▒ ██▒   ▒████▄       ▓  ██▒ ▓▒|||||||        '( ____))_ )'
-    |||||||▒██░       ▒██░  ██▒   ▓███▄░    ▒██▒           ▓██ ░▄█ ▒   ▒██  ▀█▄     ▒ ▓██░ ▒░|||||||        .-'   //  '-.
-    |||||||▒██░       ▒██   ██░   ▓██ █▄    ░██░           ▒██▀▀█▄     ░██▄▄▄▄██    ░ ▓██▓ ░ |||||||       /     ((      \
-    |||||||░██████▒   ░ ████▓▒░   ▒██▒ █▄   ░██░    ██▓    ░██▓ ▒██▒    ▓█   ▓██▒     ▒██▒ ░ |||||||      |       *       |
-    |||||||░ ▒░▓  ░   ░ ▒░▒░▒░    ▒ ▒▒ ▓▒   ░▓      ▒▓▒    ░ ▒▓ ░▒▓░    ▒▒   ▓▒█░     ▒ ░░   |||||||       \             /
-    |||||||░ ░ ▒  ░     ░ ▒ ▒░    ░ ░▒ ▒░    ▒ ░    ░▒       ░▒ ░ ▒░     ▒   ▒▒ ░       ░    |||||||        \   |_w_|   /
-    |||||||░ ░      ░ ░ ░ ▒     ░ ░░ ░     ▒ ░    ░        ░░   ░      ░   ▒        ░        |||||||        _)  \ ` /  (_
-    |||||||░  ░       ░ ░     ░  ░       ░       ░        ░              ░  ░                |||||||      (((_ _/   \_ _)))
-    |||||||░                                                                                 |||||||
+
+ ██▓███  ▓█████   ▄████  ▄▄▄        ██████  █    ██   ██████     ██▓     ▒█████   ██ ▄█▀ ██▓    ██▀███   ▄▄▄     ▄▄▄█████▓
+▓██░  ██▒▓█   ▀  ██▒ ▀█▒▒████▄    ▒██    ▒  ██  ▓██▒▒██    ▒    ▓██▒    ▒██▒  ██▒ ██▄█▒ ▓██▒   ▓██ ▒ ██▒▒████▄   ▓  ██▒ ▓▒
+▓██░ ██▓▒▒███   ▒██░▄▄▄░▒██  ▀█▄  ░ ▓██▄   ▓██  ▒██░░ ▓██▄      ▒██░    ▒██░  ██▒▓███▄░ ▒██▒   ▓██ ░▄█ ▒▒██  ▀█▄ ▒ ▓██░ ▒░
+▒██▄█▓▒ ▒▒▓█  ▄ ░▓█  ██▓░██▄▄▄▄██   ▒   ██▒▓▓█  ░██░  ▒   ██▒   ▒██░    ▒██   ██░▓██ █▄ ░██░   ▒██▀▀█▄  ░██▄▄▄▄██░ ▓██▓ ░ 
+▒██▒ ░  ░░▒████▒░▒▓███▀▒ ▓█   ▓██▒▒██████▒▒▒▒█████▓ ▒██████▒▒   ░██████▒░ ████▓▒░▒██▒ █▄░██░   ░██▓ ▒██▒ ▓█   ▓██▒ ▒██▒ ░ 
+▒▓▒░ ░  ░░░ ▒░ ░ ░▒   ▒  ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░▒▓▒ ▒ ▒ ▒ ▒▓▒ ▒ ░   ░ ▒░▓  ░░ ▒░▒░▒░ ▒ ▒▒ ▓▒░▓     ░ ▒▓ ░▒▓░ ▒▒   ▓▒█░ ▒ ░░   
+░▒ ░      ░ ░  ░  ░   ░   ▒   ▒▒ ░░ ░▒  ░ ░░░▒░ ░ ░ ░ ░▒  ░ ░   ░ ░ ▒  ░  ░ ▒ ▒░ ░ ░▒ ▒░ ▒ ░     ░▒ ░ ▒░  ▒   ▒▒ ░   ░    
+░░          ░   ░ ░   ░   ░   ▒   ░  ░  ░   ░░░ ░ ░ ░  ░  ░       ░ ░   ░ ░ ░ ▒  ░ ░░ ░  ▒ ░     ░░   ░   ░   ▒    ░      
+            ░  ░      ░       ░  ░      ░     ░           ░         ░  ░    ░ ░  ░  ░    ░        ░           ░  ░        
+                                                                                                                          
+
     
 ![Loki.Rat](https://github.com/sobri3195/pegasus-loki-rat/blob/master/Lokirat.jpg)
 
-Loki.Rat is a fork of the [Ares RAT](https://github.com/sobri3195/Ares), it integrates new modules, like recording , lockscreen , and locate options.
+Loki.Rat is a fork of the [Pegasus Loki RAT](https://github.com/sobri3195/Ares), it integrates new modules, like recording , lockscreen , and locate options.
 Loki.Rat is a Python Remote Access Tool.
 
 # Join our Telegram Channel [Loki.Rat](https://t.me/cybersecuritydown)
 
 
-[![How to Use Loki.Rat](https://img.youtube.com/vi/bA-N1lv57OI/0.jpg)](https://www.youtube.com/watch?v=bA-N1lv57OI)
+[![How to Use Loki.Rat]
 
 Warning: Only use this software according to your current legislation. Misuse of this software can raise legal and ethical issues which I don't support nor can be held responsible for.
 ![Loki.Rat](https://3.bp.blogspot.com/-hCo9eJTSH5Y/WknUCULBwUI/AAAAAAAAAtY/i08DjoFqwLUsmnXhI7e5YX9AJuZmrjitQCLcBGAs/s1600/1234.png)
@@ -110,7 +106,7 @@ Open a terminal windows and type this command :
                          row.
      --persistent          Automatically install the agent on first run.
 ```
-![Loki.Rat](https://4.bp.blogspot.com/-tbXl_inoyLc/WknUCUBGPPI/AAAAAAAAAtQ/upyR69qd7mguVq9HtgXx0cCbYZ3z5jcugCLcBGAs/s1600/12345.png)
+![Pegasus-Loki.Rat]
 Supported payload commands
 ```
      <any shell command>
@@ -159,3 +155,6 @@ Supported payload commands
      help
      This help.
 ```
+
+## Author
+Muhammad Sobri Maulana - Pegasus Hacker
