@@ -19,7 +19,7 @@
     
 ![Loki.Rat](https://github.com/sobri3195/pegasus-loki-rat/blob/master/Lokirat.jpg)
 
-Loki.Rat is a fork of the [Ares RAT](https://github.com/sweetsoftware/Ares), it integrates new modules, like recording , lockscreen , and locate options.
+Loki.Rat is a fork of the [Ares RAT](https://github.com/sobri3195/Ares), it integrates new modules, like recording , lockscreen , and locate options.
 Loki.Rat is a Python Remote Access Tool.
 
 # Join our Telegram Channel [Loki.Rat](https://t.me/cybersecuritydown)
@@ -159,5 +159,3 @@ Supported payload commands
      help
      This help.
 ```
-![Loki.Rat](https://1.bp.blogspot.com/-WSolWnb_MPY/WknUCQKM9nI/AAAAAAAAAtU/1e7U7xDvT0ECJ-EDbxTCXbpM1kk9kr1WwCLcBGAs/s1600/123.png)
- # <> with :heart: in HAITI 🇭🇹 
