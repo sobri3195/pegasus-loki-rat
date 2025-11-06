@@ -1,0 +1,22 @@
+=== BTS API Pentest Summary Report ===
+
+Total Successful Responses with Location Data: 0
+Total Warnings (Missing Location Field): 8
+Total Errors (Invalid JSON or No Response): 0
+Total Failed Requests (Non-200 Status): 0
+
+Successful BTS IDs:
+
+Warnings BTS IDs:
+ - 67890
+ - 12345
+ - ' OR '1'='1
+ - '; DROP TABLE users; --
+ - <script>alert('XSS')</script>
+ - admin'--
+ - ' UNION SELECT NULL, NULL, NULL --
+ - ' OR 1=1--
+
+Errors BTS IDs:
+
+Failed Requests (BTS ID and Status Code):

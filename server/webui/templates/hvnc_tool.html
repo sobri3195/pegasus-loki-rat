@@ -1,0 +1,1251 @@
+{% with previous_page=url_for('webui.agent_list'), title="HVNC Control" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <section id="main_content">
+        <div class="tool-interface">
+            <!-- Header Section -->
+            <div class="page-header">
+                <h2>🖥️ Hidden Virtual Network Computing</h2>
+                <p>Advanced remote desktop control with stealth capabilities</p>
+            </div>
+
+            <!-- HVNC Control Panel -->
+            <div class="hvnc-control">
+                <h3>HVNC Control Panel</h3>
+                <div class="control-grid">
+                    <div class="control-section">
+                        <h4>Session Management</h4>
+                        <div class="session-controls">
+                            <button id="startHVNC" class="btn btn-success">
+                                <span class="btn-icon">▶️</span>
+                                Start HVNC
+                            </button>
+                            <button id="stopHVNC" class="btn btn-danger" disabled>
+                                <span class="btn-icon">⏹️</span>
+                                Stop HVNC
+                            </button>
+                            <button id="refreshSessions" class="btn btn-info">
+                                <span class="btn-icon">🔄</span>
+                                Refresh Sessions
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h4>Display Settings</h4>
+                        <div class="display-controls">
+                            <div class="form-group">
+                                <label for="resolution">Resolution:</label>
+                                <select id="resolution">
+                                    <option value="1024x768">1024x768</option>
+                                    <option value="1280x720" selected>1280x720</option>
+                                    <option value="1366x768">1366x768</option>
+                                    <option value="1920x1080">1920x1080</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="quality">Quality:</label>
+                                <select id="quality">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h4>Input Control</h4>
+                        <div class="input-controls">
+                            <label><input type="checkbox" id="mouseControl" checked> Mouse Control</label>
+                            <label><input type="checkbox" id="keyboardControl" checked> Keyboard Control</label>
+                            <label><input type="checkbox" id="clipboardSync"> Clipboard Sync</label>
+                            <label><input type="checkbox" id="fileTransfer"> File Transfer</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Sessions -->
+            <div class="active-sessions">
+                <h3>Active HVNC Sessions</h3>
+                <div class="sessions-container">
+                    <div id="sessionsList" class="sessions-list">
+                        <!-- Sessions will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- HVNC Viewer -->
+            <div class="hvnc-viewer">
+                <h3>Remote Desktop Viewer</h3>
+                <div class="viewer-container">
+                    <div class="viewer-toolbar">
+                        <div class="toolbar-left">
+                            <button id="fullscreenBtn" class="btn btn-secondary">
+                                <span class="btn-icon">⛶</span>
+                                Fullscreen
+                            </button>
+                            <button id="screenshotBtn" class="btn btn-secondary">
+                                <span class="btn-icon">📷</span>
+                                Screenshot
+                            </button>
+                            <button id="recordBtn" class="btn btn-secondary">
+                                <span class="btn-icon">🎥</span>
+                                Record
+                            </button>
+                        </div>
+
+                        <div class="toolbar-center">
+                            <span id="connectionStatus" class="connection-status">Not Connected</span>
+                        </div>
+
+                        <div class="toolbar-right">
+                            <button id="ctrlAltDel" class="btn btn-warning">
+                                <span class="btn-icon">⌨️</span>
+                                Ctrl+Alt+Del
+                            </button>
+                            <button id="showKeyboard" class="btn btn-info">
+                                <span class="btn-icon">⌨️</span>
+                                Virtual Keyboard
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="viewer-screen">
+                        <div id="hvncScreen" class="hvnc-screen">
+                            <div class="no-connection">
+                                <div class="no-connection-icon">🖥️</div>
+                                <h4>No Active Connection</h4>
+                                <p>Select an agent and start HVNC session to begin remote control</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Manager -->
+            <div class="file-manager">
+                <h3>Remote File Manager</h3>
+                <div class="file-manager-container">
+                    <div class="file-toolbar">
+                        <button id="refreshFiles" class="btn btn-secondary">
+                            <span class="btn-icon">🔄</span>
+                            Refresh
+                        </button>
+                        <button id="uploadFile" class="btn btn-primary">
+                            <span class="btn-icon">⬆️</span>
+                            Upload
+                        </button>
+                        <button id="downloadFile" class="btn btn-success" disabled>
+                            <span class="btn-icon">⬇️</span>
+                            Download
+                        </button>
+                        <button id="deleteFile" class="btn btn-danger" disabled>
+                            <span class="btn-icon">🗑️</span>
+                            Delete
+                        </button>
+                    </div>
+
+                    <div class="file-browser">
+                        <div class="path-bar">
+                            <input type="text" id="currentPath" value="C:\" readonly>
+                            <button id="navigateUp" class="btn btn-secondary">
+                                <span class="btn-icon">⬆️</span>
+                            </button>
+                        </div>
+
+                        <div id="fileList" class="file-list">
+                            <!-- Files will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Virtual Keyboard Modal -->
+<div id="virtualKeyboard" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4>Virtual Keyboard</h4>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="keyboard">
+                <!-- Keyboard layout will be generated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    let hvncSession = null;
+    let screenUpdateInterval = null;
+    let selectedAgent = null;
+
+    $(document).ready(function () {
+        initializeHVNC();
+        setupEventHandlers();
+        loadActiveSessions();
+    });
+
+    function initializeHVNC() {
+        // Get selected agent from URL parameters or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        selectedAgent = urlParams.get('agent') || localStorage.getItem('selectedAgent');
+
+        if (selectedAgent) {
+            $('#connectionStatus').text(`Ready for Agent ${selectedAgent}`);
+        }
+    }
+
+    function setupEventHandlers() {
+        $('#startHVNC').on('click', startHVNCSession);
+        $('#stopHVNC').on('click', stopHVNCSession);
+        $('#refreshSessions').on('click', loadActiveSessions);
+        $('#fullscreenBtn').on('click', toggleFullscreen);
+        $('#screenshotBtn').on('click', takeScreenshot);
+        $('#recordBtn').on('click', toggleRecording);
+        $('#ctrlAltDel').on('click', sendCtrlAltDel);
+        $('#showKeyboard').on('click', showVirtualKeyboard);
+        $('#refreshFiles').on('click', refreshFileList);
+        $('#uploadFile').on('click', uploadFile);
+        $('#downloadFile').on('click', downloadFile);
+        $('#deleteFile').on('click', deleteFile);
+        $('#navigateUp').on('click', navigateUp);
+
+        // Screen interaction
+        $('#hvncScreen').on('click', handleScreenClick);
+        $('#hvncScreen').on('mousemove', handleMouseMove);
+
+        // Modal close
+        $('.close-btn').on('click', function () {
+            $(this).closest('.modal').hide();
+        });
+
+        // Keyboard events
+        $(document).on('keydown', handleKeyDown);
+        $(document).on('keyup', handleKeyUp);
+    }
+
+    function startHVNCSession() {
+        if (!selectedAgent) {
+            alert('Please select an agent first');
+            return;
+        }
+
+        const sessionConfig = {
+            agent_id: selectedAgent,
+            resolution: $('#resolution').val(),
+            quality: $('#quality').val(),
+            mouse_control: $('#mouseControl').is(':checked'),
+            keyboard_control: $('#keyboardControl').is(':checked'),
+            clipboard_sync: $('#clipboardSync').is(':checked'),
+            file_transfer: $('#fileTransfer').is(':checked')
+        };
+
+        // Simulate HVNC session start
+        hvncSession = {
+            id: 'hvnc_' + Date.now(),
+            agent_id: selectedAgent,
+            status: 'connecting',
+            ...sessionConfig
+        };
+
+        $('#connectionStatus').text('Connecting...');
+        $('#startHVNC').prop('disabled', true);
+
+        // Simulate connection process
+        setTimeout(() => {
+            hvncSession.status = 'connected';
+            $('#connectionStatus').text('Connected').addClass('connected');
+            $('#startHVNC').prop('disabled', false);
+            $('#stopHVNC').prop('disabled', false);
+
+            // Start screen updates
+            startScreenUpdates();
+
+            // Show connected screen
+            showConnectedScreen();
+
+            // Add to sessions list
+            addSessionToList(hvncSession);
+
+        }, 2000);
+    }
+
+    function stopHVNCSession() {
+        if (hvncSession) {
+            hvncSession.status = 'disconnected';
+            $('#connectionStatus').text('Disconnected').removeClass('connected');
+            $('#stopHVNC').prop('disabled', true);
+
+            // Stop screen updates
+            if (screenUpdateInterval) {
+                clearInterval(screenUpdateInterval);
+                screenUpdateInterval = null;
+            }
+
+            // Show no connection screen
+            showNoConnectionScreen();
+
+            // Remove from sessions list
+            $(`#session_${hvncSession.id}`).remove();
+
+            hvncSession = null;
+        }
+    }
+
+    function startScreenUpdates() {
+        // Simulate screen updates
+        screenUpdateInterval = setInterval(() => {
+            if (hvncSession && hvncSession.status === 'connected') {
+                updateScreen();
+            }
+        }, 100); // 10 FPS
+    }
+
+    function updateScreen() {
+        // In a real implementation, this would receive screen data from the agent
+        // For demo purposes, we'll show a simulated desktop
+        const timestamp = new Date().toLocaleTimeString();
+        $('#hvncScreen').html(`
+    <div class="simulated-desktop">
+      <div class="desktop-wallpaper">
+        <div class="desktop-icons">
+          <div class="desktop-icon">
+            <div class="icon">💻</div>
+            <div class="label">My Computer</div>
+          </div>
+          <div class="desktop-icon">
+            <div class="icon">📁</div>
+            <div class="label">Documents</div>
+          </div>
+          <div class="desktop-icon">
+            <div class="icon">🗑️</div>
+            <div class="label">Recycle Bin</div>
+          </div>
+        </div>
+        <div class="taskbar">
+          <div class="start-button">Start</div>
+          <div class="taskbar-time">${timestamp}</div>
+        </div>
+      </div>
+    </div>
+  `);
+    }
+
+    function showConnectedScreen() {
+        $('#hvncScreen').removeClass('no-connection').addClass('connected');
+    }
+
+    function showNoConnectionScreen() {
+        $('#hvncScreen').removeClass('connected').addClass('no-connection');
+        $('#hvncScreen').html(`
+    <div class="no-connection">
+      <div class="no-connection-icon">🖥️</div>
+      <h4>No Active Connection</h4>
+      <p>Select an agent and start HVNC session to begin remote control</p>
+    </div>
+  `);
+    }
+
+    function loadActiveSessions() {
+        // Simulate loading active sessions
+        $('#sessionsList').html(`
+    <div class="session-item">
+      <div class="session-info">
+        <div class="session-agent">Agent: ${selectedAgent || 'None'}</div>
+        <div class="session-status">${hvncSession ? hvncSession.status : 'No active session'}</div>
+      </div>
+      <div class="session-actions">
+        <button class="btn-small btn-info" onclick="focusSession()">Focus</button>
+        <button class="btn-small btn-danger" onclick="terminateSession()">Terminate</button>
+      </div>
+    </div>
+  `);
+    }
+
+    function addSessionToList(session) {
+        const sessionHtml = `
+    <div id="session_${session.id}" class="session-item active">
+      <div class="session-info">
+        <div class="session-agent">Agent: ${session.agent_id}</div>
+        <div class="session-status">${session.status}</div>
+        <div class="session-resolution">${session.resolution}</div>
+      </div>
+      <div class="session-actions">
+        <button class="btn-small btn-info" onclick="focusSession('${session.id}')">Focus</button>
+        <button class="btn-small btn-danger" onclick="terminateSession('${session.id}')">Terminate</button>
+      </div>
+    </div>
+  `;
+        $('#sessionsList').append(sessionHtml);
+    }
+
+    function handleScreenClick(e) {
+        if (!hvncSession || hvncSession.status !== 'connected') return;
+
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Send click to remote desktop
+        console.log(`Click at ${x}, ${y}`);
+
+        // Visual feedback
+        showClickFeedback(x, y);
+    }
+
+    function handleMouseMove(e) {
+        if (!hvncSession || hvncSession.status !== 'connected') return;
+        if (!$('#mouseControl').is(':checked')) return;
+
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Send mouse move to remote desktop
+        // console.log(`Mouse move to ${x}, ${y}`);
+    }
+
+    function handleKeyDown(e) {
+        if (!hvncSession || hvncSession.status !== 'connected') return;
+        if (!$('#keyboardControl').is(':checked')) return;
+
+        // Prevent default for special keys
+        if (e.ctrlKey || e.altKey || e.metaKey) {
+            e.preventDefault();
+        }
+
+        console.log(`Key down: ${e.key}`);
+    }
+
+    function handleKeyUp(e) {
+        if (!hvncSession || hvncSession.status !== 'connected') return;
+        if (!$('#keyboardControl').is(':checked')) return;
+
+        console.log(`Key up: ${e.key}`);
+    }
+
+    function showClickFeedback(x, y) {
+        const feedback = $('<div class="click-feedback"></div>');
+        feedback.css({
+            position: 'absolute',
+            left: x - 5,
+            top: y - 5,
+            width: 10,
+            height: 10,
+            background: '#ff6b35',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            zIndex: 1000
+        });
+
+        $('#hvncScreen').append(feedback);
+
+        setTimeout(() => {
+            feedback.fadeOut(300, () => feedback.remove());
+        }, 200);
+    }
+
+    function toggleFullscreen() {
+        const viewer = document.getElementById('hvncScreen');
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            viewer.requestFullscreen();
+        }
+    }
+
+    function takeScreenshot() {
+        if (!hvncSession) {
+            alert('No active HVNC session');
+            return;
+        }
+
+        // Simulate screenshot
+        alert('Screenshot saved to downloads folder');
+    }
+
+    function toggleRecording() {
+        const btn = $('#recordBtn');
+        if (btn.hasClass('recording')) {
+            btn.removeClass('recording').html('<span class="btn-icon">🎥</span> Record');
+            alert('Recording stopped and saved');
+        } else {
+            btn.addClass('recording').html('<span class="btn-icon">⏹️</span> Stop Recording');
+            alert('Recording started');
+        }
+    }
+
+    function sendCtrlAltDel() {
+        if (!hvncSession) {
+            alert('No active HVNC session');
+            return;
+        }
+
+        console.log('Sending Ctrl+Alt+Del');
+        alert('Ctrl+Alt+Del sent to remote desktop');
+    }
+
+    function showVirtualKeyboard() {
+        $('#virtualKeyboard').show();
+        generateKeyboard();
+    }
+
+    function generateKeyboard() {
+        const keys = [
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+            ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+            ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+        ];
+
+        let keyboardHtml = '';
+        keys.forEach(row => {
+            keyboardHtml += '<div class="key-row">';
+            row.forEach(key => {
+                keyboardHtml += `<button class="virtual-key" data-key="${key}">${key}</button>`;
+            });
+            keyboardHtml += '</div>';
+        });
+
+        keyboardHtml += '<div class="key-row">';
+        keyboardHtml += '<button class="virtual-key space-key" data-key=" ">Space</button>';
+        keyboardHtml += '<button class="virtual-key" data-key="Enter">Enter</button>';
+        keyboardHtml += '<button class="virtual-key" data-key="Backspace">Backspace</button>';
+        keyboardHtml += '</div>';
+
+        $('.keyboard').html(keyboardHtml);
+
+        $('.virtual-key').on('click', function () {
+            const key = $(this).data('key');
+            console.log(`Virtual key pressed: ${key}`);
+            // Send key to remote desktop
+        });
+    }
+
+    function refreshFileList() {
+        // Simulate file list refresh
+        const files = [
+            { name: '..', type: 'directory', size: '', modified: '' },
+            { name: 'Program Files', type: 'directory', size: '', modified: '2023-01-15 10:30' },
+            { name: 'Users', type: 'directory', size: '', modified: '2023-01-15 10:30' },
+            { name: 'Windows', type: 'directory', size: '', modified: '2023-01-15 10:30' },
+            { name: 'document.txt', type: 'file', size: '1.2 KB', modified: '2023-01-20 14:45' },
+            { name: 'image.jpg', type: 'file', size: '256 KB', modified: '2023-01-20 14:45' }
+        ];
+
+        let fileListHtml = '';
+        files.forEach(file => {
+            const icon = file.type === 'directory' ? '📁' : '📄';
+            fileListHtml += `
+      <div class="file-item" data-name="${file.name}" data-type="${file.type}">
+        <div class="file-icon">${icon}</div>
+        <div class="file-name">${file.name}</div>
+        <div class="file-size">${file.size}</div>
+        <div class="file-modified">${file.modified}</div>
+      </div>
+    `;
+        });
+
+        $('#fileList').html(fileListHtml);
+
+        $('.file-item').on('click', function () {
+            $('.file-item').removeClass('selected');
+            $(this).addClass('selected');
+
+            const isFile = $(this).data('type') === 'file';
+            $('#downloadFile, #deleteFile').prop('disabled', !isFile);
+        });
+
+        $('.file-item').on('dblclick', function () {
+            const name = $(this).data('name');
+            const type = $(this).data('type');
+
+            if (type === 'directory') {
+                navigateToDirectory(name);
+            }
+        });
+    }
+
+    function navigateToDirectory(dirName) {
+        const currentPath = $('#currentPath').val();
+        let newPath;
+
+        if (dirName === '..') {
+            // Go up one directory
+            const pathParts = currentPath.split('\\');
+            pathParts.pop();
+            newPath = pathParts.join('\\') || 'C:';
+        } else {
+            // Go into directory
+            newPath = currentPath.endsWith('\\') ? currentPath + dirName : currentPath + '\\' + dirName;
+        }
+
+        $('#currentPath').val(newPath);
+        refreshFileList();
+    }
+
+    function navigateUp() {
+        navigateToDirectory('..');
+    }
+
+    function uploadFile() {
+        // Create file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+
+        input.onchange = function (e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                console.log(`Uploading file: ${file.name}`);
+                // Simulate upload
+                alert(`File ${file.name} uploaded successfully`);
+            });
+            refreshFileList();
+        };
+
+        input.click();
+    }
+
+    function downloadFile() {
+        const selected = $('.file-item.selected');
+        if (selected.length === 0) {
+            alert('Please select a file to download');
+            return;
+        }
+
+        const fileName = selected.data('name');
+        console.log(`Downloading file: ${fileName}`);
+        alert(`File ${fileName} downloaded successfully`);
+    }
+
+    function deleteFile() {
+        const selected = $('.file-item.selected');
+        if (selected.length === 0) {
+            alert('Please select a file to delete');
+            return;
+        }
+
+        const fileName = selected.data('name');
+        if (confirm(`Are you sure you want to delete ${fileName}?`)) {
+            console.log(`Deleting file: ${fileName}`);
+            selected.remove();
+            $('#downloadFile, #deleteFile').prop('disabled', true);
+        }
+    }
+
+    function focusSession(sessionId) {
+        console.log(`Focusing session: ${sessionId}`);
+    }
+
+    function terminateSession(sessionId) {
+        if (confirm('Are you sure you want to terminate this session?')) {
+            console.log(`Terminating session: ${sessionId}`);
+            if (sessionId && sessionId.includes(hvncSession?.id)) {
+                stopHVNCSession();
+            }
+        }
+    }
+
+    // Initialize file list on load
+    $(document).ready(function () {
+        refreshFileList();
+    });
+</script>
+
+<style>
+    .tool-interface {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid #ff6b35;
+        border-radius: 10px;
+    }
+
+    .page-header h2 {
+        color: #ff6b35;
+        margin-bottom: 10px;
+        text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+    }
+
+    .hvnc-control {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .hvnc-control h3 {
+        color: #ff6b35;
+        margin-bottom: 20px;
+    }
+
+    .control-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .control-section h4 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 5px;
+    }
+
+    .session-controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .display-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .form-group label {
+        color: #ccc;
+        font-weight: bold;
+    }
+
+    .form-group select {
+        padding: 8px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 5px;
+        color: #fff;
+    }
+
+    .input-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .input-controls label {
+        display: flex;
+        align-items: center;
+        color: #ccc;
+        cursor: pointer;
+    }
+
+    .input-controls input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .active-sessions {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .active-sessions h3 {
+        color: #ff6b35;
+        margin-bottom: 20px;
+    }
+
+    .sessions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .session-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #333;
+        border-radius: 8px;
+        border-left: 4px solid #555;
+    }
+
+    .session-item.active {
+        border-left-color: #00ff41;
+        background: rgba(0, 255, 65, 0.1);
+    }
+
+    .session-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .session-agent {
+        color: #00ff41;
+        font-weight: bold;
+    }
+
+    .session-status {
+        color: #ccc;
+        font-size: 12px;
+    }
+
+    .session-resolution {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .session-actions {
+        display: flex;
+        gap: 5px;
+    }
+
+    .hvnc-viewer {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .hvnc-viewer h3 {
+        color: #ff6b35;
+        margin-bottom: 20px;
+    }
+
+    .viewer-container {
+        border: 1px solid #333;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .viewer-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        background: #333;
+        border-bottom: 1px solid #444;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+        display: flex;
+        gap: 10px;
+    }
+
+    .connection-status {
+        color: #ccc;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 15px;
+        background: #444;
+    }
+
+    .connection-status.connected {
+        color: #00ff41;
+        background: rgba(0, 255, 65, 0.2);
+    }
+
+    .viewer-screen {
+        position: relative;
+        background: #000;
+        min-height: 500px;
+    }
+
+    .hvnc-screen {
+        width: 100%;
+        height: 500px;
+        position: relative;
+        cursor: crosshair;
+    }
+
+    .hvnc-screen.no-connection {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #666;
+    }
+
+    .no-connection-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+    }
+
+    .simulated-desktop {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #4a90e2, #357abd);
+        position: relative;
+    }
+
+    .desktop-wallpaper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .desktop-icons {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .desktop-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+
+    .desktop-icon:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .desktop-icon .icon {
+        font-size: 2em;
+        margin-bottom: 5px;
+    }
+
+    .desktop-icon .label {
+        color: white;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .taskbar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+    }
+
+    .start-button {
+        background: #333;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .taskbar-time {
+        color: white;
+        font-size: 12px;
+    }
+
+    .file-manager {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .file-manager h3 {
+        color: #ff6b35;
+        margin-bottom: 20px;
+    }
+
+    .file-toolbar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .file-browser {
+        border: 1px solid #333;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .path-bar {
+        display: flex;
+        background: #333;
+        padding: 10px;
+        border-bottom: 1px solid #444;
+    }
+
+    .path-bar input {
+        flex: 1;
+        padding: 8px;
+        background: #444;
+        border: 1px solid #555;
+        border-radius: 5px;
+        color: #fff;
+        margin-right: 10px;
+    }
+
+    .file-list {
+        max-height: 300px;
+        overflow-y: auto;
+        background: #222;
+    }
+
+    .file-item {
+        display: grid;
+        grid-template-columns: 40px 1fr 80px 120px;
+        gap: 10px;
+        padding: 10px;
+        border-bottom: 1px solid #333;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .file-item:hover {
+        background: #333;
+    }
+
+    .file-item.selected {
+        background: rgba(0, 255, 65, 0.2);
+        border-color: #00ff41;
+    }
+
+    .file-icon {
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    .file-name {
+        color: #ccc;
+        font-weight: bold;
+    }
+
+    .file-size,
+    .file-modified {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        background: #2a2a2a;
+        margin: 5% auto;
+        padding: 0;
+        border: 1px solid #333;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 600px;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid #333;
+    }
+
+    .modal-header h4 {
+        color: #ff6b35;
+        margin: 0;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #ccc;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .close-btn:hover {
+        color: #ff6b35;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .keyboard {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .key-row {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+    }
+
+    .virtual-key {
+        padding: 10px 15px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 5px;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 40px;
+    }
+
+    .virtual-key:hover {
+        background: #444;
+        border-color: #ff6b35;
+    }
+
+    .virtual-key:active {
+        background: #ff6b35;
+        transform: scale(0.95);
+    }
+
+    .space-key {
+        flex: 1;
+        max-width: 200px;
+    }
+
+    .btn-small {
+        padding: 5px 10px;
+        font-size: 12px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-small.btn-info {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-small.btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-small:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+
+    .click-feedback {
+        animation: clickPulse 0.3s ease-out;
+    }
+
+    @keyframes clickPulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(2);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 0;
+        }
+    }
+
+    #recordBtn.recording {
+        background: #dc3545;
+        animation: recordingPulse 1s infinite;
+    }
+
+    @keyframes recordingPulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.7;
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .control-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .viewer-toolbar {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toolbar-left,
+        .toolbar-right {
+            justify-content: center;
+        }
+
+        .file-toolbar {
+            flex-direction: column;
+        }
+
+        .file-item {
+            grid-template-columns: 40px 1fr;
+        }
+
+        .file-size,
+        .file-modified {
+            display: none;
+        }
+
+        .session-controls {
+            flex-direction: column;
+        }
+    }
+
+    /* Fullscreen styles */
+    .hvnc-screen:fullscreen {
+        background: #000;
+        cursor: none;
+    }
+
+    .hvnc-screen:-webkit-full-screen {
+        background: #000;
+        cursor: none;
+    }
+
+    .hvnc-screen:-moz-full-screen {
+        background: #000;
+        cursor: none;
+    }
+</style>
+
+{% include "footer.html" %}

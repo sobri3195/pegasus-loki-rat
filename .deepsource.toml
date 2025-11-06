@@ -1,0 +1,17 @@
+# DeepSource configuration file
+# Learn how to configure: https://docs.deepsource.com/docs/configuration
+version = 1
+exclude_patterns = ["venv", "node_modules", "bower_components", "out", "bin", "build", "dist"]
+test_patterns = ["**/test_*.py", "**/__tests__/**", "**/*.spec.ts", "**/*.spec.js", "**/*.test.ts", "**/*.test.js", "**/test/**"]
+
+[[analyzers]]
+  name = "python"
+  enabled = true
+
+[[analyzers]]
+  name = "javascript"
+  enabled = true
+
+[[analyzers]]
+  name = "csharp"
+  enabled = true

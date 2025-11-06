@@ -1,0 +1,15 @@
+{
+    "workbench.colorTheme": "Solarized Dark",
+    "editor.experimental.asyncTokenization": true,
+    "editor.experimental.asyncTokenizationLogging": true,
+    "editor.experimental.asyncTokenizationVerification": true,
+    "editor.experimental.preferTreeSitter.css": true,
+    "editor.experimental.preferTreeSitter.ini": true,
+    "editor.experimental.preferTreeSitter.regex": true,
+    "editor.experimental.preferTreeSitter.typescript": true,
+    "editor.experimental.treeSitterTelemetry": true,
+    "editor.experimentalGpuAcceleration": "on",
+    "editor.inertialScroll": false,
+    "CodeGPT.apiKey": "Gemini CLI",
+    "Lingma.aI Chat.webToolsInAsk/AgentMode": "Auto-execute"
+}

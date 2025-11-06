@@ -1,0 +1,1821 @@
+{% with title="Terminal" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <!-- Terminal Header -->
+    <section class="terminal-header">
+        <div class="terminal-title">
+            <div class="terminal-icon">💻</div>
+            <div class="title-content">
+                <h1>Pegasus Terminal</h1>
+                <p>Windows Terminal-like interface for agent management</p>
+            </div>
+        </div>
+        <div class="terminal-actions">
+            <button id="new-tab-btn" class="btn btn-primary">
+                <span class="btn-icon">➕</span>
+                New Terminal
+            </button>
+            <button id="settings-btn" class="btn btn-secondary">
+                <span class="btn-icon">⚙️</span>
+                Settings
+            </button>
+        </div>
+    </section>
+
+    <!-- Terminal Interface -->
+    <section class="terminal-interface">
+        <!-- Tab Bar -->
+        <div class="terminal-tabs">
+            <div class="tabs-container" id="tabs-container">
+                <div class="tab welcome-tab active" data-tab="welcome">
+                    <span class="tab-icon">🏠</span>
+                    <span class="tab-title">Welcome</span>
+                </div>
+            </div>
+            <div class="tab-controls">
+                <button class="tab-control" id="add-tab" title="New Tab">➕</button>
+                <button class="tab-control" id="split-pane" title="Split Pane">⧉</button>
+            </div>
+        </div>
+
+        <!-- Terminal Content -->
+        <div class="terminal-content">
+            <!-- Split Container -->
+            <div class="split-container" id="split-container">
+                <!-- Welcome Pane -->
+                <div class="terminal-pane active" id="pane-welcome">
+                    <div class="welcome-content">
+                        <div class="welcome-hero">
+                            <div class="hero-icon">🚀</div>
+                            <h2>Welcome to Pegasus Terminal</h2>
+                            <p>Select an agent to start a terminal session</p>
+                        </div>
+
+                        <div class="agents-grid">
+                            {% for agent in agents %}
+                            <div class="agent-card" data-agent-id="{{ agent.id }}">
+                                <div class="agent-header">
+                                    <div class="agent-status {{ 'online' if agent.is_online() else 'offline' }}">
+                                        <span class="status-dot"></span>
+                                        {{ 'Online' if agent.is_online() else 'Offline' }}
+                                    </div>
+                                    <div class="agent-actions">
+                                        <button class="action-btn connect-btn" data-agent-id="{{ agent.id }}"
+                                            {{ 'disabled' if not agent.is_online() else '' }}>
+                                            Connect
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="agent-info">
+                                    <div class="agent-name">{{ agent.display_name }}</div>
+                                    <div class="agent-details">
+                                        <span class="detail-item">
+                                            <span class="detail-icon">🖥️</span>
+                                            {{ agent.operating_system or 'Unknown OS' }}
+                                        </span>
+                                        <span class="detail-item">
+                                            <span class="detail-icon">👤</span>
+                                            {{ agent.username or 'Unknown User' }}
+                                        </span>
+                                        <span class="detail-item">
+                                            <span class="detail-icon">🌐</span>
+                                            {{ agent.remote_ip or 'Unknown IP' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if not agents %}
+                        <div class="no-agents">
+                            <div class="no-agents-icon">🤖</div>
+                            <h3>No Agents Available</h3>
+                            <p>No online agents found. Make sure agents are connected to start terminal sessions.</p>
+                            <a href="{{ url_for('webui.agent_list') }}" class="btn btn-primary">View All Agents</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Split Resize Handle -->
+            <div class="split-handle" id="split-handle" style="display: none;"></div>
+        </div>
+    </section>
+</div>
+
+<!-- Terminal Settings Modal -->
+<div id="settings-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Terminal Settings</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="settings-section">
+                <h4>Appearance</h4>
+                <div class="setting-item">
+                    <label for="theme-select">Theme:</label>
+                    <select id="theme-select">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                        <option value="campbell">Campbell</option>
+                        <option value="vintage">Vintage</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="font-size">Font Size:</label>
+                    <input type="range" id="font-size" min="10" max="24" value="14">
+                    <span id="font-size-value">14px</span>
+                </div>
+                <div class="setting-item">
+                    <label for="font-family">Font Family:</label>
+                    <select id="font-family">
+                        <option value="'Cascadia Code', monospace">Cascadia Code</option>
+                        <option value="'Consolas', monospace">Consolas</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="'Monaco', monospace">Monaco</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>Behavior</h4>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="auto-scroll"> Auto-scroll to bottom
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="bell-sound"> Bell sound
+                    </label>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>Profiles</h4>
+                <div class="setting-item">
+                    <label for="profile-select">Default Profile:</label>
+                    <select id="profile-select">
+                        <option value="default">Default</option>
+                        <option value="powershell">PowerShell</option>
+                        <option value="cmd">Command Prompt</option>
+                        <option value="ubuntu">Ubuntu</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>Windows Terminal Configuration</h4>
+                <div class="setting-item">
+                    <label>Import Settings:</label>
+                    <div class="config-controls">
+                        <input type="file" id="config-file-input" accept=".json" style="display: none;">
+                        <button class="btn btn-secondary" id="import-config-btn">Import settings.json</button>
+                        <button class="btn btn-secondary" id="export-config-btn">Export Configuration</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Quick Setup:</label>
+                    <div class="config-controls">
+                        <button class="btn btn-secondary" id="load-default-config">Load Default Config</button>
+                        <button class="btn btn-secondary" id="create-profile-btn">Create New Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="reset-settings">Reset to Default</button>
+            <button class="btn btn-info" id="keybindings-btn">View Keybindings</button>
+            <button class="btn btn-primary" id="save-settings">Save Settings</button>
+        </div>
+    </div>
+</div>
+
+<!-- Keybindings Modal -->
+<div id="keybindings-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Keyboard Shortcuts</h3>
+            <button class="modal-close" onclick="terminal.hideKeybindings()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="keybindings-list" id="keybindings-list">
+                <!-- Keybindings will be populated here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="terminal.hideKeybindings()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Creator Modal -->
+<div id="profile-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Create New Profile</h3>
+            <button class="modal-close" onclick="terminal.hideProfileModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-item">
+                <label for="profile-name">Profile Name:</label>
+                <input type="text" id="profile-name" placeholder="My Custom Profile">
+            </div>
+            <div class="setting-item">
+                <label for="profile-command">Command Line:</label>
+                <input type="text" id="profile-command" placeholder="cmd.exe" value="cmd.exe">
+            </div>
+            <div class="setting-item">
+                <label for="profile-icon">Icon:</label>
+                <select id="profile-icon">
+                    <option value="💻">💻 Computer</option>
+                    <option value="🔷">🔷 PowerShell</option>
+                    <option value="⚫">⚫ Command</option>
+                    <option value="🐧">🐧 Linux</option>
+                    <option value="☁️">☁️ Cloud</option>
+                    <option value="🌿">🌿 Git</option>
+                    <option value="🔥">🔥 Custom</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label for="profile-color-scheme">Color Scheme:</label>
+                <select id="profile-color-scheme">
+                    <option value="Campbell">Campbell</option>
+                    <option value="One Half Dark">One Half Dark</option>
+                    <option value="Vintage">Vintage</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="terminal.hideProfileModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="terminal.createProfile()">Create Profile</button>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('webui.static', filename='js/windows-terminal-config.js') }}"></script>
+<script>
+    class PegasusTerminal {
+=======
+        constructor() {
+            this.tabs = new Map();
+            this.activeTab = 'welcome';
+            this.settings = this.loadSettings();
+            this.profiles = this.loadProfiles();
+            this.splitPanes = new Map();
+            this.activeSplit = null;
+            this.configManager = new WindowsTerminalConfig();
+            this.init();
+        }
+
+        init() {
+            this.bindEvents();
+            this.applySettings();
+            this.loadAgents();
+            this.populateSettingsForm();
+        }
+
+        bindEvents() {
+            // Tab controls
+            document.getElementById('add-tab').addEventListener('click', () => this.showAgentSelector());
+            document.getElementById('new-tab-btn').addEventListener('click', () => this.showAgentSelector());
+            document.getElementById('split-pane').addEventListener('click', () => this.splitCurrentPane());
+
+            // Settings
+            document.getElementById('settings-btn').addEventListener('click', () => this.showSettings());
+            document.getElementById('save-settings').addEventListener('click', () => this.saveSettings());
+            document.getElementById('reset-settings').addEventListener('click', () => this.resetSettings());
+
+            // Modal close
+            document.querySelector('.modal-close').addEventListener('click', () => this.hideSettings());
+
+            // Agent connections
+            document.querySelectorAll('.connect-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const agentId = e.target.dataset.agentId;
+                    this.connectToAgent(agentId);
+                });
+            });
+
+            // Tab switching
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.tab')) {
+                    const tab = e.target.closest('.tab');
+                    const tabId = tab.dataset.tab;
+                    this.switchTab(tabId);
+                }
+            });
+
+            // Settings inputs
+            document.getElementById('font-size').addEventListener('input', (e) => {
+                document.getElementById('font-size-value').textContent = e.target.value + 'px';
+            });
+
+            // Windows Terminal Config events
+            document.getElementById('import-config-btn').addEventListener('click', () => {
+                document.getElementById('config-file-input').click();
+            });
+
+            document.getElementById('config-file-input').addEventListener('change', (e) => {
+                this.importConfig(e.target.files[0]);
+            });
+
+            document.getElementById('export-config-btn').addEventListener('click', () => {
+                this.exportConfig();
+            });
+
+            document.getElementById('load-default-config').addEventListener('click', () => {
+                this.loadDefaultConfig();
+            });
+
+            document.getElementById('create-profile-btn').addEventListener('click', () => {
+                this.showProfileModal();
+            });
+
+            document.getElementById('keybindings-btn').addEventListener('click', () => {
+                this.showKeybindings();
+            });
+        }
+
+        async connectToAgent(agentId) {
+            try {
+                const response = await fetch('/api/terminal/create_session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ agent_id: agentId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const profileName = this.settings.defaultProfile || 'default';
+                    this.createTerminalTab(data.session_id, data.agent_name, agentId, profileName);
+                } else {
+                    this.showError('Failed to create terminal session: ' + data.error);
+                }
+            } catch (error) {
+                this.showError('Connection failed: ' + error.message);
+            }
+        }
+
+        createTerminalTab(sessionId, agentName, agentId, profileName = 'default') {
+            const tabId = `terminal-${sessionId}`;
+            const profile = this.profiles[profileName] || this.profiles.default;
+
+            // Create tab
+            const tab = document.createElement('div');
+            tab.className = 'tab';
+            tab.dataset.tab = tabId;
+            tab.innerHTML = `
+                <span class="tab-icon">${profile.icon}</span>
+                <span class="tab-title">${agentName}</span>
+                <button class="tab-close" data-session="${sessionId}">&times;</button>
+            `;
+
+            // Add tab to container
+            const tabsContainer = document.getElementById('tabs-container');
+            tabsContainer.appendChild(tab);
+
+            // Create terminal pane
+            const pane = document.createElement('div');
+            pane.className = 'terminal-pane';
+            pane.id = `pane-${tabId}`;
+            pane.style.background = profile.background;
+            pane.innerHTML = `
+                <div class="terminal-session" data-session="${sessionId}" data-profile="${profileName}">
+                    <div class="terminal-header-bar">
+                        <div class="terminal-info">
+                            <span class="terminal-agent">${agentName}</span>
+                            <span class="terminal-status online">Connected</span>
+                            <span class="terminal-profile">${profile.name}</span>
+                        </div>
+                        <div class="terminal-controls">
+                            <button class="control-btn" onclick="terminal.splitPane('${sessionId}')">Split</button>
+                            <button class="control-btn" onclick="terminal.clearTerminal('${sessionId}')">Clear</button>
+                            <button class="control-btn" onclick="terminal.downloadLog('${sessionId}')">Download Log</button>
+                        </div>
+                    </div>
+                    <div class="terminal-output" id="output-${sessionId}" style="color: ${profile.foreground}; font-family: ${profile.fontFamily}; font-size: ${profile.fontSize}px;"></div>
+                    <div class="terminal-input-container">
+                        <span class="terminal-prompt" style="color: ${profile.cursorColor};">${profile.prompt}</span>
+                        <input type="text" class="terminal-input" id="input-${sessionId}"
+                               placeholder="Enter command..." autocomplete="off" style="color: ${profile.foreground}; font-family: ${profile.fontFamily}; font-size: ${profile.fontSize}px;">
+                    </div>
+                </div>
+            `;
+
+            // Add pane to split container
+            document.querySelector('.split-container').appendChild(pane);
+
+            // Store tab info
+            this.tabs.set(tabId, {
+                sessionId,
+                agentName,
+                agentId,
+                element: pane
+            });
+
+            // Switch to new tab
+            this.switchTab(tabId);
+
+            // Bind terminal events
+            this.bindTerminalEvents(sessionId);
+
+            // Start polling for output
+            this.startOutputPolling(sessionId);
+        }
+
+        bindTerminalEvents(sessionId) {
+            const input = document.getElementById(`input-${sessionId}`);
+
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const command = input.value.trim();
+                    if (command) {
+                        this.sendCommand(sessionId, command);
+                        input.value = '';
+                    }
+                }
+            });
+
+            // Tab close
+            document.querySelector(`[data-session="${sessionId}"]`).addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.closeTab(sessionId);
+            });
+        }
+
+        async sendCommand(sessionId, command) {
+            try {
+                // Add command to output
+                this.addToOutput(sessionId, `$ ${command}`, 'command');
+
+                const response = await fetch('/api/terminal/send_command', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        command: command
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    this.addToOutput(sessionId, `Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                this.addToOutput(sessionId, `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async startOutputPolling(sessionId) {
+            const pollOutput = async () => {
+                try {
+                    const response = await fetch(`/api/terminal/get_output/${sessionId}`);
+                    const data = await response.json();
+
+                    if (data.output) {
+                        // Update terminal output (implement diff to avoid duplicates)
+                        this.updateOutput(sessionId, data.output);
+                    }
+                } catch (error) {
+                    console.error('Failed to poll output:', error);
+                }
+
+                // Continue polling if tab is still active
+                if (this.tabs.has(`terminal-${sessionId}`)) {
+                    setTimeout(pollOutput, 1000);
+                }
+            };
+
+            pollOutput();
+        }
+
+        addToOutput(sessionId, text, type = 'output') {
+            const output = document.getElementById(`output-${sessionId}`);
+            if (!output) return;
+
+            const line = document.createElement('div');
+            line.className = `terminal-line ${type}`;
+            line.textContent = text;
+            output.appendChild(line);
+
+            if (this.settings.autoScroll) {
+                output.scrollTop = output.scrollHeight;
+            }
+        }
+
+        updateOutput(sessionId, fullOutput) {
+            const output = document.getElementById(`output-${sessionId}`);
+            if (!output) return;
+
+            const lines = fullOutput.split('\n');
+
+            // Clear and rebuild (simple approach - could be optimized)
+            output.innerHTML = '';
+            lines.forEach(line => {
+                if (line.trim()) {
+                    const div = document.createElement('div');
+                    div.className = 'terminal-line';
+                    div.textContent = line;
+                    output.appendChild(div);
+                }
+            });
+
+            if (this.settings.autoScroll) {
+                output.scrollTop = output.scrollHeight;
+            }
+        }
+
+        switchTab(tabId) {
+            // Remove active class from all tabs and panes
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.terminal-pane').forEach(pane => pane.classList.remove('active'));
+
+            // Add active class to selected tab and pane
+            const selectedTab = document.querySelector(`[data-tab="${tabId}"]`);
+            const selectedPane = document.getElementById(`pane-${tabId}`);
+
+            if (selectedTab) selectedTab.classList.add('active');
+            if (selectedPane) selectedPane.classList.add('active');
+
+            this.activeTab = tabId;
+        }
+
+        async closeTab(sessionId) {
+            const tabId = `terminal-${sessionId}`;
+
+            // Close session on server
+            try {
+                await fetch('/api/terminal/close_session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ session_id: sessionId })
+                });
+            } catch (error) {
+                console.error('Failed to close session:', error);
+            }
+
+            // Remove tab and pane
+            const tab = document.querySelector(`[data-tab="${tabId}"]`);
+            const pane = document.getElementById(`pane-${tabId}`);
+
+            if (tab) tab.remove();
+            if (pane) pane.remove();
+
+            // Remove from tabs map
+            this.tabs.delete(tabId);
+
+            // Switch to welcome tab if no other tabs
+            if (this.tabs.size === 0) {
+                this.switchTab('welcome');
+            } else {
+                // Switch to first available tab
+                const firstTab = this.tabs.keys().next().value;
+                this.switchTab(firstTab);
+            }
+        }
+
+        clearTerminal(sessionId) {
+            const output = document.getElementById(`output-${sessionId}`);
+            if (output) {
+                output.innerHTML = '';
+            }
+        }
+
+        downloadLog(sessionId) {
+            const output = document.getElementById(`output-${sessionId}`);
+            if (!output) return;
+
+            const text = Array.from(output.children).map(line => line.textContent).join('\n');
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `terminal-log-${sessionId}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        splitCurrentPane() {
+            if (this.activeTab === 'welcome') {
+                this.showToast('Please select a terminal session to split', 'info');
+                return;
+            }
+
+            const sessionId = this.activeTab.replace('terminal-', '');
+            this.splitPane(sessionId);
+        }
+
+        splitPane(sessionId) {
+            const currentPane = document.getElementById(`pane-terminal-${sessionId}`);
+            if (!currentPane) return;
+
+            // Create split container if not exists
+            const splitContainer = document.querySelector('.split-container');
+            const splitHandle = document.getElementById('split-handle');
+
+            // Show split handle
+            splitHandle.style.display = 'block';
+
+            // Add split class to container
+            splitContainer.classList.add('split-mode');
+
+            // Create new split pane
+            const newPane = currentPane.cloneNode(true);
+            const newSessionId = 'split-' + Date.now();
+            newPane.id = `pane-terminal-${newSessionId}`;
+            newPane.classList.add('split-pane');
+
+            // Update IDs in new pane
+            newPane.innerHTML = newPane.innerHTML.replace(new RegExp(sessionId, 'g'), newSessionId);
+
+            // Add to container
+            splitContainer.appendChild(newPane);
+
+            // Store split info
+            this.splitPanes.set(newSessionId, {
+                originalSession: sessionId,
+                element: newPane
+            });
+
+            // Make split handle draggable
+            this.makeSplitHandleDraggable();
+
+            this.showToast('Terminal split created', 'success');
+        }
+
+        makeSplitHandleDraggable() {
+            const handle = document.getElementById('split-handle');
+            const container = document.querySelector('.split-container');
+
+            let isDragging = false;
+
+            handle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            function onMouseMove(e) {
+                if (!isDragging) return;
+
+                const containerRect = container.getBoundingClientRect();
+                const percentage = ((e.clientY - containerRect.top) / containerRect.height) * 100;
+
+                if (percentage > 10 && percentage < 90) {
+                    container.style.setProperty('--split-position', percentage + '%');
+                }
+            }
+
+            function onMouseUp() {
+                isDragging = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+        }
+
+        showAgentSelector() {
+            // For now, just scroll to agents section
+            const agentsGrid = document.querySelector('.agents-grid');
+            if (agentsGrid) {
+                agentsGrid.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        showSettings() {
+            document.getElementById('settings-modal').style.display = 'flex';
+            this.populateSettingsForm();
+        }
+
+        hideSettings() {
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        loadSettings() {
+            const defaultSettings = {
+                theme: 'dark',
+                fontSize: 14,
+                fontFamily: "'Cascadia Code', monospace",
+                autoScroll: true,
+                bellSound: false,
+                defaultProfile: 'default'
+            };
+
+            const saved = localStorage.getItem('pegasus-terminal-settings');
+            return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
+        }
+
+        saveSettings() {
+            this.settings = {
+                theme: document.getElementById('theme-select').value,
+                fontSize: parseInt(document.getElementById('font-size').value),
+                fontFamily: document.getElementById('font-family').value,
+                autoScroll: document.getElementById('auto-scroll').checked,
+                bellSound: document.getElementById('bell-sound').checked,
+                defaultProfile: document.getElementById('profile-select').value
+            };
+
+            localStorage.setItem('pegasus-terminal-settings', JSON.stringify(this.settings));
+            this.applySettings();
+            this.hideSettings();
+            this.showToast('Settings saved successfully', 'success');
+        }
+
+        resetSettings() {
+            localStorage.removeItem('pegasus-terminal-settings');
+            this.settings = this.loadSettings();
+            this.populateSettingsForm();
+            this.applySettings();
+            this.showToast('Settings reset to default', 'info');
+        }
+
+        populateSettingsForm() {
+            document.getElementById('theme-select').value = this.settings.theme;
+            document.getElementById('font-size').value = this.settings.fontSize;
+            document.getElementById('font-size-value').textContent = this.settings.fontSize + 'px';
+            document.getElementById('font-family').value = this.settings.fontFamily;
+            document.getElementById('auto-scroll').checked = this.settings.autoScroll;
+            document.getElementById('bell-sound').checked = this.settings.bellSound;
+            document.getElementById('profile-select').value = this.settings.defaultProfile;
+        }
+
+        applySettings() {
+            document.documentElement.style.setProperty('--terminal-font-size', this.settings.fontSize + 'px');
+            document.documentElement.style.setProperty('--terminal-font-family', this.settings.fontFamily);
+
+            // Apply theme
+            document.body.className = `theme-${this.settings.theme}`;
+        }
+
+        loadAgents() {
+            // Refresh agent list periodically
+            setInterval(() => {
+                // This would typically fetch updated agent status
+                this.updateAgentStatus();
+            }, 30000);
+        }
+
+        updateAgentStatus() {
+            // Update agent status indicators
+            document.querySelectorAll('.agent-card').forEach(card => {
+                // This would check actual agent status
+            });
+        }
+
+        loadProfiles() {
+            const defaultProfiles = {
+                default: {
+                    name: 'Default',
+                    icon: '💻',
+                    prompt: '$',
+                    background: '#1e1e1e',
+                    foreground: '#cccccc',
+                    cursorColor: '#4ec9b0',
+                    fontFamily: "'Cascadia Code', monospace",
+                    fontSize: 14
+                },
+                powershell: {
+                    name: 'PowerShell',
+                    icon: '🔷',
+                    prompt: 'PS>',
+                    background: '#012456',
+                    foreground: '#ffffff',
+                    cursorColor: '#ffffff',
+                    fontFamily: "'Cascadia Code', monospace",
+                    fontSize: 14
+                },
+                cmd: {
+                    name: 'Command Prompt',
+                    icon: '⚫',
+                    prompt: 'C:\\>',
+                    background: '#000000',
+                    foreground: '#c0c0c0',
+                    cursorColor: '#c0c0c0',
+                    fontFamily: "'Consolas', monospace",
+                    fontSize: 12
+                },
+                ubuntu: {
+                    name: 'Ubuntu',
+                    icon: '🐧',
+                    prompt: '$',
+                    background: '#300a24',
+                    foreground: '#ffffff',
+                    cursorColor: '#ffffff',
+                    fontFamily: "'Ubuntu Mono', monospace",
+                    fontSize: 14
+                }
+            };
+
+            const saved = localStorage.getItem('pegasus-terminal-profiles');
+            return saved ? { ...defaultProfiles, ...JSON.parse(saved) } : defaultProfiles;
+        }
+
+        saveProfiles() {
+            localStorage.setItem('pegasus-terminal-profiles', JSON.stringify(this.profiles));
+        }
+
+        showError(message) {
+            // Enhanced error display with toast notification
+            this.showToast(message, 'error');
+        }
+
+        showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <span class="toast-icon">${type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️'}</span>
+                    <span class="toast-message">${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Windows Terminal Configuration Methods
+        async importConfig(file) {
+            if (!file) return;
+
+            try {
+                const config = await this.configManager.loadFromFile(file);
+                const pegasusConfig = this.configManager.convertToPegasusFormat();
+
+                // Update profiles
+                this.profiles = { ...this.profiles, ...pegasusConfig.profiles };
+                this.saveProfiles();
+
+                // Update profile selector
+                this.updateProfileSelector();
+
+                this.showToast(`Configuration imported successfully! ${Object.keys(pegasusConfig.profiles).length} profiles loaded.`, 'success');
+            } catch (error) {
+                this.showToast(`Failed to import configuration: ${error.message}`, 'error');
+            }
+        }
+
+        exportConfig() {
+            try {
+                this.configManager.downloadConfig('pegasus-terminal-settings.json');
+                this.showToast('Configuration exported successfully!', 'success');
+            } catch (error) {
+                this.showToast(`Failed to export configuration: ${error.message}`, 'error');
+            }
+        }
+
+        loadDefaultConfig() {
+            try {
+                const defaultConfig = this.configManager.getDefaultConfig();
+                this.configManager.currentConfig = defaultConfig;
+                const pegasusConfig = this.configManager.convertToPegasusFormat();
+
+                // Update profiles
+                this.profiles = { ...this.profiles, ...pegasusConfig.profiles };
+                this.saveProfiles();
+
+                // Update profile selector
+                this.updateProfileSelector();
+
+                this.showToast('Default Windows Terminal configuration loaded!', 'success');
+            } catch (error) {
+                this.showToast(`Failed to load default configuration: ${error.message}`, 'error');
+            }
+        }
+
+        updateProfileSelector() {
+            const profileSelect = document.getElementById('profile-select');
+
+            // Clear existing options except defaults
+            const defaultOptions = ['default', 'powershell', 'cmd', 'ubuntu'];
+            Array.from(profileSelect.options).forEach(option => {
+                if (!defaultOptions.includes(option.value)) {
+                    option.remove();
+                }
+            });
+
+            // Add new profiles
+            Object.keys(this.profiles).forEach(key => {
+                if (!defaultOptions.includes(key)) {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = this.profiles[key].name;
+                    profileSelect.appendChild(option);
+                }
+            });
+        }
+
+        showKeybindings() {
+            const modal = document.getElementById('keybindings-modal');
+            const list = document.getElementById('keybindings-list');
+
+            // Get keybindings from config manager
+            const keybindings = this.configManager.parseKeybindings();
+
+            // Default keybindings if none configured
+            const defaultKeybindings = [
+                { keys: 'Ctrl+Shift+T', description: 'New Tab' },
+                { keys: 'Ctrl+Shift+W', description: 'Close Tab' },
+                { keys: 'Alt+Shift+D', description: 'Split Pane' },
+                { keys: 'Ctrl+C', description: 'Copy' },
+                { keys: 'Ctrl+V', description: 'Paste' },
+                { keys: 'Ctrl+Shift+F', description: 'Find' },
+                { keys: 'Alt+↑/↓/←/→', description: 'Move Focus' }
+            ];
+
+            const bindings = keybindings.length > 0 ? keybindings : defaultKeybindings;
+
+            list.innerHTML = bindings.map(binding => `
+                <div class="keybinding-item">
+                    <span class="keybinding-keys">${binding.keys}</span>
+                    <span class="keybinding-description">${binding.description}</span>
+                </div>
+            `).join('');
+
+            modal.style.display = 'flex';
+        }
+
+        hideKeybindings() {
+            document.getElementById('keybindings-modal').style.display = 'none';
+        }
+
+        showProfileModal() {
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        hideProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        createProfile() {
+            const name = document.getElementById('profile-name').value.trim();
+            const command = document.getElementById('profile-command').value.trim();
+            const icon = document.getElementById('profile-icon').value;
+            const colorScheme = document.getElementById('profile-color-scheme').value;
+
+            if (!name) {
+                this.showToast('Profile name is required', 'error');
+                return;
+            }
+
+            const profileKey = name.toLowerCase().replace(/\s+/g, '_');
+
+            // Create new profile
+            const newProfile = {
+                name: name,
+                icon: icon,
+                prompt: command.includes('powershell') ? 'PS>' : command.includes('cmd') ? 'C:\\>' : '$',
+                background: colorScheme === 'Campbell' ? '#0c0c0c' : colorScheme === 'Vintage' ? '#000000' : '#282c34',
+                foreground: colorScheme === 'Campbell' ? '#cccccc' : colorScheme === 'Vintage' ? '#c0c0c0' : '#dcdfe4',
+                cursorColor: '#ffffff',
+                fontFamily: "'Cascadia Code', monospace",
+                fontSize: 14,
+                commandline: command,
+                colorScheme: colorScheme
+            };
+
+            // Add to profiles
+            this.profiles[profileKey] = newProfile;
+            this.saveProfiles();
+
+            // Update profile selector
+            this.updateProfileSelector();
+
+            // Close modal and clear form
+            this.hideProfileModal();
+            document.getElementById('profile-name').value = '';
+            document.getElementById('profile-command').value = 'cmd.exe';
+
+            this.showToast(`Profile "${name}" created successfully!`, 'success');
+        }
+    }
+
+    // Initialize terminal when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        window.terminal = new PegasusTerminal();
+    });
+</script>
+
+<style>
+    /* Terminal Interface Styles */
+    .terminal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-primary);
+        border-radius: 12px;
+    }
+
+    .terminal-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .terminal-icon {
+        font-size: 2.5rem;
+        color: var(--primary-green);
+    }
+
+    .title-content h1 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.8rem;
+    }
+
+    .title-content p {
+        margin: 0.5rem 0 0 0;
+        color: var(--text-muted);
+    }
+
+    .terminal-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .terminal-interface {
+        background: var(--bg-card);
+        border: 1px solid var(--border-primary);
+        border-radius: 12px;
+        overflow: hidden;
+        min-height: 70vh;
+    }
+
+    /* Tab Bar */
+    .terminal-tabs {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border-primary);
+        padding: 0 1rem;
+    }
+
+    .tabs-container {
+        display: flex;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .tab {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1rem;
+        background: transparent;
+        border: none;
+        border-radius: 8px 8px 0 0;
+        cursor: pointer;
+        transition: var(--transition-normal);
+        color: var(--text-muted);
+        position: relative;
+    }
+
+    .tab:hover {
+        background: rgba(0, 255, 65, 0.1);
+        color: var(--text-primary);
+    }
+
+    .tab.active {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--primary-green);
+    }
+
+    .tab-icon {
+        font-size: 1rem;
+    }
+
+    .tab-title {
+        font-weight: 500;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tab-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.2rem;
+        border-radius: 4px;
+        margin-left: 0.5rem;
+        opacity: 0;
+        transition: var(--transition-normal);
+    }
+
+    .tab:hover .tab-close {
+        opacity: 1;
+    }
+
+    .tab-close:hover {
+        background: rgba(255, 0, 0, 0.2);
+        color: #ff4444;
+    }
+
+    .tab-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .tab-control {
+        background: none;
+        border: 1px solid var(--border-primary);
+        color: var(--text-muted);
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--transition-normal);
+    }
+
+    .tab-control:hover {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border-color: var(--border-accent);
+    }
+
+    /* Terminal Content */
+    .terminal-content {
+        position: relative;
+        height: calc(70vh - 60px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Split Container */
+    .split-container {
+        flex: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .split-container.split-mode {
+        --split-position: 50%;
+    }
+
+    .split-container.split-mode .terminal-pane:first-child {
+        height: var(--split-position);
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .split-container.split-mode .split-pane {
+        height: calc(100% - var(--split-position));
+        border-top: 1px solid var(--border-primary);
+    }
+
+    /* Split Handle */
+    .split-handle {
+        position: absolute;
+        top: var(--split-position, 50%);
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-green);
+        cursor: row-resize;
+        z-index: 10;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+    .split-handle:hover {
+        opacity: 1;
+        height: 6px;
+    }
+
+    .terminal-pane {
+        display: none;
+        height: 100%;
+        padding: 1rem;
+    }
+
+    .terminal-pane.active {
+        display: block;
+    }
+
+    /* Welcome Content */
+    .welcome-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        height: 100%;
+    }
+
+    .welcome-hero {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .hero-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .welcome-hero h2 {
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        font-size: 2rem;
+    }
+
+    .welcome-hero p {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    /* Agents Grid */
+    .agents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .agent-card {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: var(--transition-normal);
+        cursor: pointer;
+    }
+
+    .agent-card:hover {
+        border-color: var(--border-accent);
+        box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+    }
+
+    .agent-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .agent-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .agent-status.online {
+        color: var(--primary-green);
+    }
+
+    .agent-status.offline {
+        color: var(--text-muted);
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .connect-btn {
+        background: var(--primary-green);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition-normal);
+    }
+
+    .connect-btn:hover:not(:disabled) {
+        background: var(--primary-green-dark);
+    }
+
+    .connect-btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+    }
+
+    .agent-name {
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .agent-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .detail-icon {
+        font-size: 1rem;
+    }
+
+    /* No Agents */
+    .no-agents {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+    }
+
+    .no-agents-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .no-agents h3 {
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+    }
+
+    .no-agents p {
+        margin: 0 0 2rem 0;
+        line-height: 1.6;
+    }
+
+    /* Terminal Session */
+    .terminal-session {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: #1e1e1e;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .terminal-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        background: #2d2d30;
+        border-bottom: 1px solid #3e3e42;
+    }
+
+    .terminal-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .terminal-agent {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .terminal-status {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.8rem;
+    }
+
+    .terminal-status.online {
+        color: #4ec9b0;
+    }
+
+    .terminal-status::before {
+        content: '●';
+        font-size: 0.6rem;
+    }
+
+    .terminal-profile {
+        color: #6a6a6a;
+        font-size: 0.8rem;
+        margin-left: 1rem;
+    }
+
+    .terminal-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .control-btn {
+        background: none;
+        border: 1px solid #3e3e42;
+        color: #cccccc;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: var(--transition-normal);
+    }
+
+    .control-btn:hover {
+        background: #3e3e42;
+        border-color: #007acc;
+    }
+
+    .terminal-output {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        font-family: var(--terminal-font-family, 'Cascadia Code', monospace);
+        font-size: var(--terminal-font-size, 14px);
+        line-height: 1.4;
+        background: #1e1e1e;
+        color: #cccccc;
+    }
+
+    .terminal-line {
+        margin-bottom: 0.2rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    .terminal-line.command {
+        color: #4ec9b0;
+    }
+
+    .terminal-line.error {
+        color: #f44747;
+    }
+
+    .terminal-input-container {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        background: #2d2d30;
+        border-top: 1px solid #3e3e42;
+    }
+
+    .terminal-prompt {
+        color: #4ec9b0;
+        font-family: var(--terminal-font-family, 'Cascadia Code', monospace);
+        font-size: var(--terminal-font-size, 14px);
+        margin-right: 0.5rem;
+        font-weight: bold;
+    }
+
+    .terminal-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        font-family: var(--terminal-font-family, 'Cascadia Code', monospace);
+        font-size: var(--terminal-font-size, 14px);
+        outline: none;
+    }
+
+    .terminal-input::placeholder {
+        color: #6a6a6a;
+    }
+
+    /* Settings Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: var(--bg-card);
+        border: 1px solid var(--border-primary);
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: var(--text-primary);
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: var(--transition-normal);
+    }
+
+    .modal-close:hover {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .settings-section {
+        margin-bottom: 2rem;
+    }
+
+    .settings-section h4 {
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        font-size: 1.1rem;
+    }
+
+    .setting-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .setting-item label {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .setting-item select,
+    .setting-item input[type="range"] {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        color: var(--text-primary);
+        padding: 0.5rem;
+        border-radius: 4px;
+        min-width: 150px;
+    }
+
+    .setting-item input[type="checkbox"] {
+        margin-right: 0.5rem;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-primary);
+    }
+
+    /* Toast Notifications */
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 300px;
+    }
+
+    .toast-error {
+        border-left: 4px solid #f44747;
+    }
+
+    .toast-success {
+        border-left: 4px solid #4ec9b0;
+    }
+
+    .toast-info {
+        border-left: 4px solid #007acc;
+    }
+
+    .toast-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .toast-icon {
+        font-size: 1.2rem;
+    }
+
+    .toast-message {
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    /* Theme Variations */
+    .theme-dark {
+        --terminal-bg: #1e1e1e;
+        --terminal-fg: #cccccc;
+        --terminal-prompt: #4ec9b0;
+    }
+
+    .theme-light {
+        --terminal-bg: #ffffff;
+        --terminal-fg: #333333;
+        --terminal-prompt: #0066cc;
+    }
+
+    .theme-campbell {
+        --terminal-bg: #0c0c0c;
+        --terminal-fg: #cccccc;
+        --terminal-prompt: #13a10e;
+    }
+
+    .theme-vintage {
+        --terminal-bg: #000000;
+        --terminal-fg: #00ff00;
+        --terminal-prompt: #00ff00;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .terminal-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .terminal-actions {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .agents-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tab-title {
+            max-width: 100px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .terminal-interface {
+            min-height: 60vh;
+        }
+
+        .terminal-tabs {
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+
+        .tabs-container {
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .tab {
+            flex-shrink: 0;
+        }
+
+        .agent-card {
+            padding: 1rem;
+        }
+
+        .agent-header {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+        }
+
+        .setting-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .modal-footer {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .terminal-header {
+            padding: 1rem;
+        }
+
+        .title-content h1 {
+            font-size: 1.5rem;
+        }
+
+        .welcome-hero {
+            padding: 1rem;
+        }
+
+        .welcome-hero h2 {
+            font-size: 1.5rem;
+        }
+
+        .hero-icon {
+            font-size: 3rem;
+        }
+
+        .terminal-content {
+            height: calc(60vh - 80px);
+        }
+
+        .terminal-pane {
+            padding: 0.5rem;
+        }
+    }
+
+    /* Scrollbar Styling */
+    .terminal-output::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .terminal-output::-webkit-scrollbar-track {
+        background: #2d2d30;
+    }
+
+    .terminal-output::-webkit-scrollbar-thumb {
+        background: #3e3e42;
+        border-radius: 4px;
+    }
+
+    .terminal-output::-webkit-scrollbar-thumb:hover {
+        background: #4e4e52;
+    }
+
+    /* Animation Classes */
+    .fade-in {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .slide-in {
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-100%);
+        }
+
+        to {
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+{% include "footer.html" %}

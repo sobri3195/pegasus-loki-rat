@@ -1,8 +1,8 @@
 SERVER = "__SERVER__"
-HELLO_INTERVAL = __HELLO_INTERVAL__
-IDLE_TIME = __IDLE_TIME__
-MAX_FAILED_CONNECTIONS = __MAX_FAILED_CONNECTIONS__
-PERSIST = __PERSIST__
+HELLO_INTERVAL = 30  # Default value, adjust as needed
+IDLE_TIME = 60       # Default value, adjust as needed
+MAX_FAILED_CONNECTIONS = 5  # Default value, adjust as needed
+PERSIST = False      # Default value, adjust as needed
 HELP = """
 <any shell command>
 Executes the command in a shell and return its output.

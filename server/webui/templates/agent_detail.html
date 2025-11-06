@@ -1,24 +1,4 @@
-{% with previous_page=url_for('webui.agent_list'), title=agent.display_name %}
-{% include "header.html" %}
-{% endwith %}
-
-<div class="container"> 
-<section id="main_content">
-    
-    <div id="terminal">
-    </div>
-	
-	<div style="width:80%;height:40px;">
-		<div id="msg-term-update">
-		&#8595; Terminal updated &#8595;
-		</div>
-	</div>
-    
-	<div >
-		<input type="text" name="cmd" id="cmd" style="width: 80%" placeholder="Type command here and press Enter..."/>
-	</div>
-	
-    <script>
+<script>
 	(function(){
 	
 		// list of the last commands
@@ -84,9 +64,8 @@
 		 * Send the command in the command field to the server and add it in the command history.
 		 */
 		function sendCommand() {
-			$.post("{{ url_for('api.push_command', agent_id=agent.id) }}", 
-					{'cmdline': $('#cmd').val()}, function(){});
-					
+			$.post("{{ url_for('api.push_command', agent_id=agent.agent_id) }}", 
+					{'cmdline': $('#cmd').val()}, function(){});					
 			addComandToHistory($('#cmd').val());
 			$('#cmd').val('');
 			return false;
@@ -104,7 +83,7 @@
 		  */
 		function refreshTerminal() {
 
-			$.get("{{ url_for('api.agent_console', agent_id=agent.id) }}", function(data) {
+			$.get("{{ url_for('api.agent_console', agent_id=agent.agent_id) }}", function(data) {
 				var oldScrollPosition, newScrollPosition;
 				var scrollToBottom = true;
 				var currentHtmlHash = $.md5(data);
@@ -146,18 +125,36 @@
 			   }
 			});
 		}
-		
-		/**
-		 * Call the refresh terminal fonction twice each second.
+
+		/*
+		 * Download payload function - currently not implemented
 		 */
-		$(document).ready(function(){
-			setInterval(refreshTerminal, 500);
-		});
+		/*
+		async function downloadPayload() {
+			const url = "{{ url_for('api.download_payload', agent_id=agent.agent_id) }}";
+			try {
+				const response = await fetch(url);
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				const blob = await response.blob();
+				const downloadUrl = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = downloadUrl;
+				a.download = `payload_${agent.agent_id}.exe`; // Set appropriate filename
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(downloadUrl);
+			} catch (error) {
+				console.error('Download failed:', error);
+				alert('Download failed: ' + error.message);
+			}
+		}
+		
+		// Bind the download function to the button click event
+		// document.getElementById('download-payload').addEventListener('click', downloadPayload);
+		*/
+		
 	})();
-
-    </script>
-
-</section>
-</div>
-
-{% include "footer.html" %}
+</script>

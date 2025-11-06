@@ -1,40 +1,583 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link rel="icon" type="image/ico" href="{{ url_for('webui.static', filename='icon.ico') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('webui.static', filename='css/stylesheet1.css') }}" media="screen">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('webui.static', filename='css/github-dark1.css') }}" media="screen">
-    <title>Loki.Rat</title>
-    {% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul>
-  {% for message in messages %}
-  <li>{{message}}</li>
-  {% endfor %}
-{% endif %}
-</ul>
-{% endwith %}
+<html lang="en" data-theme="dark">
 
-  </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pegasus Loki RAT - Advanced Remote Administration Tool">
+    <meta name="author" content="Pegasus Team">
+    <title>{% if title %}{{ title }} - {% endif %}Pegasus Loki RAT</title>
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="{{ url_for('webui.static', filename='js/jquery.md5.js') }}"></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('webui.static', filename='icon.ico') }}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{{ url_for('webui.static', filename='css/pegasus-premium.css') }}">
+    <link rel="stylesheet" href="{{ url_for('webui.static', filename='css/modern-style.css') }}">
+
+    <!-- Meta Tags for Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+</head>
 
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <span class="logo-icon">⚡</span>
+                <h1>PEGASUS</h1>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <p class="loading-text">Initializing Loki RAT Dashboard...</p>
+        </div>
+    </div>
 
-{% if not custom_header %}
-<header>
-  <div class="container">
-    <h1>{{ title }}</h1>
-    {% if previous_page %}
-    <a href="{{ previous_page }}">&lt;&lt; Back</a>
-    {% endif %}
-    {% if session.username %}
-    <h3 style="text-align: right">Logged in as {{ session.username }}</h3>
-    <h2 style="text-align: right"><a href="{{ url_for('webui.change_password') }}">Change Password</a>  <a href="{{ url_for('webui.logout') }}">Disconnect</a></h2>
-    {% endif %}
-   </div>
-</header>
-{% endif %}
+    <!-- Navigation Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo Section -->
+                <div class="logo-section">
+                    <a href="{{ url_for('webui.index') }}" class="logo-link">
+                        <span class="logo-icon">⚡</span>
+                        <div class="logo-text">
+                            <h1>PEGASUS</h1>
+                            <span class="logo-subtitle">Loki RAT</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="main-nav">
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="{{ url_for('webui.index') }}"
+                                class="nav-link {% if request.endpoint == 'webui.index' %}active{% endif %}">
+                                <span class="nav-icon">🏠</span>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('webui.login') }}"
+                                class="nav-link {% if request.endpoint == 'webui.login' %}active{% endif %}">
+                                <span class="nav-icon">🔐</span>
+                                <span class="nav-text">Login</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('webui.intelx_search_page') }}"
+                                class="nav-link {% if request.endpoint == 'webui.intelx_search_page' %}active{% endif %}">
+                                <span class="nav-icon">🔍</span>
+                                <span class="nav-text">IntelX</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <!-- Connection Status -->
+                    <div class="connection-status online" id="connection-status">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Online</span>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle" onclick="pegasus.toggleTheme()" title="Toggle Theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+
+                    <!-- User Menu -->
+                    <div class="user-menu dropdown">
+                        <button class="user-toggle dropdown-toggle">
+                            <span class="user-avatar">👤</span>
+                            <span class="user-name">Admin</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="#" class="dropdown-link">
+                                    <span class="dropdown-icon">👤</span>Profile
+                                </a></li>
+                            <li class="dropdown-divider"></li>
+                            <li><a href="#" class="dropdown-link">
+                                    <span class="dropdown-icon">🚪</span>Logout
+                                </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-content">
+
+        <style>
+            /* Loading Screen */
+            .loading-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: var(--gradient-bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                transition: opacity 0.5s ease, visibility 0.5s ease;
+            }
+
+            .loading-screen.hidden {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .loading-content {
+                text-align: center;
+                color: var(--text-primary);
+            }
+
+            .loading-logo {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .loading-logo .logo-icon {
+                font-size: 4rem;
+                animation: logoSpin 2s linear infinite;
+            }
+
+            .loading-logo h1 {
+                font-size: 3rem;
+                font-weight: 700;
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .loading-spinner {
+                position: relative;
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 2rem;
+            }
+
+            .spinner-ring {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border: 4px solid transparent;
+                border-top: 4px solid var(--primary-green);
+                border-radius: 50%;
+                animation: spinnerRotate 1.2s linear infinite;
+            }
+
+            .spinner-ring:nth-child(2) {
+                animation-delay: -0.4s;
+                border-top-color: var(--primary-blue);
+            }
+
+            .spinner-ring:nth-child(3) {
+                animation-delay: -0.8s;
+                border-top-color: var(--primary-purple);
+            }
+
+            @keyframes logoSpin {
+                from {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes spinnerRotate {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .loading-text {
+                color: var(--text-muted);
+                font-size: 1.1rem;
+                animation: loadingPulse 1.5s ease-in-out infinite;
+            }
+
+            @keyframes loadingPulse {
+
+                0%,
+                100% {
+                    opacity: 0.7;
+                }
+
+                50% {
+                    opacity: 1;
+                }
+            }
+
+            /* Header Styles */
+            .main-header {
+                background: var(--bg-glass);
+                backdrop-filter: blur(20px);
+                border-bottom: 2px solid #333;
+                box-shadow: var(--shadow-primary);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                padding: 0.8rem 0;
+            }
+
+            .header-content {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 2rem;
+            }
+
+            /* Logo Section */
+            .logo-section {
+                flex-shrink: 0;
+            }
+
+            .logo-link {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                text-decoration: none;
+                transition: var(--transition-normal);
+            }
+
+            .logo-link:hover {
+                transform: scale(1.05);
+            }
+
+            .logo-link .logo-icon {
+                font-size: 2.5rem;
+                color: var(--primary-green);
+                animation: logoGlow 3s ease-in-out infinite;
+            }
+
+            @keyframes logoGlow {
+
+                0%,
+                100% {
+                    filter: drop-shadow(0 0 5px rgba(0, 255, 65, 0.5));
+                }
+
+                50% {
+                    filter: drop-shadow(0 0 15px rgba(0, 255, 65, 0.8));
+                }
+            }
+
+            .logo-text h1 {
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin: 0;
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .logo-subtitle {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+
+            /* Navigation */
+            .main-nav {
+                flex: 1;
+            }
+
+            .nav-menu {
+                display: flex;
+                list-style: none;
+                gap: 0.5rem;
+                margin: 0;
+                padding: 0;
+            }
+
+            .nav-item {
+                position: relative;
+            }
+
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.8rem 1.2rem;
+                color: var(--text-muted);
+                text-decoration: none;
+                border-radius: 8px;
+                transition: var(--transition-normal);
+                font-weight: 500;
+                position: relative;
+            }
+
+            .nav-link:hover,
+            .nav-link.active {
+                color: var(--text-primary);
+                background: rgba(0, 255, 65, 0.1);
+                box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+            }
+
+            .nav-icon {
+                font-size: 1.2rem;
+            }
+
+            /* Dropdown Menu */
+            .dropdown {
+                position: relative;
+            }
+
+            .dropdown-toggle {
+                cursor: pointer;
+            }
+
+            .dropdown-arrow {
+                font-size: 0.8rem;
+                transition: var(--transition-fast);
+            }
+
+            .dropdown:hover .dropdown-arrow {
+                transform: rotate(180deg);
+            }
+
+            .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background: var(--bg-card);
+                border: 1px solid var(--border-primary);
+                border-radius: 8px;
+                box-shadow: var(--shadow-primary);
+                min-width: 200px;
+                list-style: none;
+                margin: 0;
+                padding: 0.5rem 0;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: var(--transition-normal);
+                z-index: 1001;
+            }
+
+            .dropdown-menu-right {
+                left: auto;
+                right: 0;
+            }
+
+            .dropdown:hover .dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .dropdown-link {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                padding: 0.8rem 1.2rem;
+                color: var(--text-secondary);
+                text-decoration: none;
+                transition: var(--transition-fast);
+            }
+
+            .dropdown-link:hover {
+                background: rgba(0, 255, 65, 0.1);
+                color: var(--text-primary);
+            }
+
+            .dropdown-icon {
+                font-size: 1rem;
+                width: 1.2rem;
+                text-align: center;
+            }
+
+            .dropdown-divider {
+                height: 1px;
+                background: var(--border-primary);
+                margin: 0.5rem 0;
+            }
+
+            /* Header Actions */
+            .header-actions {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                flex-shrink: 0;
+            }
+
+            .connection-status {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .connection-status.online {
+                background: rgba(0, 255, 65, 0.2);
+                color: var(--primary-green);
+                border: 1px solid var(--primary-green);
+            }
+
+            .connection-status.offline {
+                background: rgba(255, 71, 87, 0.2);
+                color: #ff4757;
+                border: 1px solid #ff4757;
+            }
+
+            .theme-toggle,
+            .notifications-toggle,
+            .user-toggle {
+                background: transparent;
+                border: 1px solid var(--border-primary);
+                border-radius: 8px;
+                padding: 0.8rem;
+                color: var(--text-muted);
+                cursor: pointer;
+                transition: var(--transition-normal);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .theme-toggle:hover,
+            .notifications-toggle:hover,
+            .user-toggle:hover {
+                border-color: var(--border-accent);
+                color: var(--text-primary);
+                box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+            }
+
+            .notifications-toggle {
+                position: relative;
+            }
+
+            .notification-badge {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: #ff4757;
+                color: white;
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 0.2rem 0.4rem;
+                border-radius: 10px;
+                min-width: 1.2rem;
+                text-align: center;
+            }
+
+            .user-avatar {
+                width: 2rem;
+                height: 2rem;
+                border-radius: 50%;
+                background: var(--gradient-primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+            }
+
+            /* Main Content */
+            .main-content {
+                min-height: calc(100vh - 120px);
+                padding: 2rem 0;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 1024px) {
+                .header-content {
+                    gap: 1rem;
+                }
+
+                .nav-text {
+                    display: none;
+                }
+
+                .user-name {
+                    display: none;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .main-header {
+                    padding: 0.5rem 0;
+                }
+
+                .header-content {
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                }
+
+                .logo-text h1 {
+                    font-size: 1.5rem;
+                }
+
+                .nav-menu {
+                    flex-wrap: wrap;
+                    gap: 0.3rem;
+                }
+
+                .nav-link {
+                    padding: 0.6rem 0.8rem;
+                }
+
+                .header-actions {
+                    gap: 0.5rem;
+                }
+
+                .dropdown-menu {
+                    position: fixed;
+                    top: auto;
+                    left: 1rem;
+                    right: 1rem;
+                    width: auto;
+                }
+            }
+        </style>
+
+        <script>
+            // Hide loading screen when page is loaded
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(() => {
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (loadingScreen) {
+                        loadingScreen.classList.add('hidden');
+                        setTimeout(() => {
+                            loadingScreen.remove();
+                        }, 500);
+                    }
+                }, 1500);
+            });
+        </script>

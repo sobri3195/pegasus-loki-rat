@@ -1,0 +1,43 @@
+<div class="card">
+    <div class="card-header">
+        <h2>IntelX Search</h2>
+    </div>
+    <div class="card-body">
+        <form id="intelx-search-form">
+            <div class="form-group">
+                <label for="search-term">Search Term</label>
+                <input type="text" id="search-term" class="form-control" placeholder="Enter search term">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        <div id="intelx-results" style="margin-top: 20px;"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('intelx-search-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const term = document.getElementById('search-term').value;
+        const resultsDiv = document.getElementById('intelx-results');
+        resultsDiv.innerHTML = 'Searching...';
+
+        fetch('/api/intelx/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ term: term })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                    return;
+                }
+                resultsDiv.innerHTML = '<h3>Results:</h3><pre>' + JSON.stringify(data.results, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<p>Error: ${error}</p>`;
+            });
+    });
+</script>

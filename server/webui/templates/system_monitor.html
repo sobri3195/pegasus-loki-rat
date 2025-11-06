@@ -1,0 +1,807 @@
+{% with previous_page=url_for('webui.agent_list'), title="System Monitor" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <section id="main_content">
+        <div class="tool-interface">
+            <!-- Header Section -->
+            <div class="page-header">
+                <h2>📊 Pegasus System Monitor</h2>
+                <p>Real-time system monitoring and performance analysis</p>
+            </div>
+
+            <!-- Monitor Dashboard -->
+            <div class="monitor-dashboard">
+                <div class="dashboard-grid">
+                    <div class="monitor-card">
+                        <div class="card-header">
+                            <h4>💻 System Overview</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">CPU Usage:</span>
+                                <span class="metric-value" id="cpuUsage">0%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Memory:</span>
+                                <span class="metric-value" id="memoryUsage">0%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Disk:</span>
+                                <span class="metric-value" id="diskUsage">0%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Network:</span>
+                                <span class="metric-value" id="networkUsage">0 KB/s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="monitor-card">
+                        <div class="card-header">
+                            <h4>🌐 Network Status</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Active Agents:</span>
+                                <span class="metric-value status-success" id="activeAgents">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Total Connections:</span>
+                                <span class="metric-value" id="totalConnections">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Data Transfer:</span>
+                                <span class="metric-value" id="dataTransfer">0 MB</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Uptime:</span>
+                                <span class="metric-value" id="uptime">00:00:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="monitor-card">
+                        <div class="card-header">
+                            <h4>🔒 Security Status</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric">
+                                <span class="metric-label">Threats Blocked:</span>
+                                <span class="metric-value status-warning" id="threatsBlocked">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Failed Logins:</span>
+                                <span class="metric-value status-danger" id="failedLogins">0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Firewall Status:</span>
+                                <span class="metric-value status-success" id="firewallStatus">Active</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Last Scan:</span>
+                                <span class="metric-value" id="lastScan">Never</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Charts -->
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h4>📈 Performance Charts</h4>
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h5>CPU Usage</h5>
+                            <div class="chart-placeholder" id="cpuChart">
+                                <canvas width="300" height="150"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h5>Memory Usage</h5>
+                            <div class="chart-placeholder" id="memoryChart">
+                                <canvas width="300" height="150"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h5>Network Activity</h5>
+                            <div class="chart-placeholder" id="networkChart">
+                                <canvas width="300" height="150"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h5>Agent Connections</h5>
+                            <div class="chart-placeholder" id="agentChart">
+                                <canvas width="300" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Monitor -->
+            <div class="process-monitor">
+                <h4>⚙️ Process Monitor</h4>
+                <div class="process-controls">
+                    <button class="btn btn-primary" onclick="refreshProcesses()">
+                        <span class="btn-icon">🔄</span>
+                        Refresh
+                    </button>
+                    <button class="btn btn-danger" onclick="killSelectedProcess()">
+                        <span class="btn-icon">❌</span>
+                        Kill Process
+                    </button>
+                    <input type="text" id="processFilter" placeholder="Filter processes..." class="process-filter">
+                </div>
+                <div class="process-table-container">
+                    <table class="process-table">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>PID</th>
+                                <th>Process Name</th>
+                                <th>CPU %</th>
+                                <th>Memory</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processTableBody">
+                            <!-- Processes will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- System Logs -->
+            <div class="system-logs">
+                <h4>📋 System Logs</h4>
+                <div class="log-controls">
+                    <select id="logLevel" class="log-filter">
+                        <option value="all">All Levels</option>
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="error">Error</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="clearLogs()">
+                        <span class="btn-icon">🗑️</span>
+                        Clear Logs
+                    </button>
+                    <button class="btn btn-info" onclick="exportLogs()">
+                        <span class="btn-icon">💾</span>
+                        Export
+                    </button>
+                </div>
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry info">
+                        <span class="log-time">[2024-01-15 10:30:15]</span>
+                        <span class="log-level">INFO</span>
+                        <span class="log-message">System monitor initialized successfully</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    let monitoringInterval;
+    let chartData = {
+        cpu: [],
+        memory: [],
+        network: [],
+        agents: []
+    };
+
+    $(document).ready(function () {
+        initializeMonitoring();
+        startRealTimeUpdates();
+        loadProcesses();
+
+        // Process filter
+        $('#processFilter').on('input', function () {
+            filterProcesses($(this).val());
+        });
+
+        // Log level filter
+        $('#logLevel').on('change', function () {
+            filterLogs($(this).val());
+        });
+    });
+
+    function initializeMonitoring() {
+        // Initialize dashboard with sample data
+        updateDashboard();
+        addLogEntry('info', 'Monitoring dashboard loaded');
+    }
+
+    function startRealTimeUpdates() {
+        monitoringInterval = setInterval(() => {
+            updateDashboard();
+            updateCharts();
+            updateProcesses();
+        }, 2000);
+    }
+
+    function updateDashboard() {
+        // Simulate real-time data
+        const cpu = Math.floor(Math.random() * 80 + 10);
+        const memory = Math.floor(Math.random() * 70 + 20);
+        const disk = Math.floor(Math.random() * 60 + 30);
+        const network = Math.floor(Math.random() * 1000 + 100);
+
+        $('#cpuUsage').text(cpu + '%');
+        $('#memoryUsage').text(memory + '%');
+        $('#diskUsage').text(disk + '%');
+        $('#networkUsage').text(network + ' KB/s');
+
+        // Network status
+        const activeAgents = Math.floor(Math.random() * 10 + 1);
+        const totalConnections = Math.floor(Math.random() * 50 + 10);
+        const dataTransfer = Math.floor(Math.random() * 500 + 100);
+
+        $('#activeAgents').text(activeAgents);
+        $('#totalConnections').text(totalConnections);
+        $('#dataTransfer').text(dataTransfer + ' MB');
+
+        // Update uptime
+        const now = new Date();
+        const uptime = formatUptime(now.getTime() - (now.getTime() - 3600000));
+        $('#uptime').text(uptime);
+
+        // Security status
+        $('#threatsBlocked').text(Math.floor(Math.random() * 5));
+        $('#failedLogins').text(Math.floor(Math.random() * 3));
+        $('#lastScan').text(new Date().toLocaleTimeString());
+
+        // Store data for charts
+        chartData.cpu.push(cpu);
+        chartData.memory.push(memory);
+        chartData.network.push(network);
+        chartData.agents.push(activeAgents);
+
+        // Keep only last 20 data points
+        Object.keys(chartData).forEach(key => {
+            if (chartData[key].length > 20) {
+                chartData[key].shift();
+            }
+        });
+    }
+
+    function updateCharts() {
+        // Simple ASCII-style charts (in real implementation, use Chart.js or similar)
+        drawSimpleChart('cpuChart', chartData.cpu, '#00ff41');
+        drawSimpleChart('memoryChart', chartData.memory, '#ffc107');
+        drawSimpleChart('networkChart', chartData.network, '#17a2b8');
+        drawSimpleChart('agentChart', chartData.agents, '#667eea');
+    }
+
+    function drawSimpleChart(containerId, data, color) {
+        const container = document.getElementById(containerId);
+        const canvas = container.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (data.length < 2) return;
+
+        // Draw chart
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        const maxValue = Math.max(...data);
+        const stepX = canvas.width / (data.length - 1);
+
+        data.forEach((value, index) => {
+            const x = index * stepX;
+            const y = canvas.height - (value / maxValue) * canvas.height;
+
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+
+        ctx.stroke();
+    }
+
+    function loadProcesses() {
+        const processes = [
+            { pid: 1234, name: 'chrome.exe', cpu: 15.2, memory: '256 MB', status: 'Running' },
+            { pid: 5678, name: 'notepad.exe', cpu: 0.1, memory: '12 MB', status: 'Running' },
+            { pid: 9012, name: 'explorer.exe', cpu: 2.3, memory: '128 MB', status: 'Running' },
+            { pid: 3456, name: 'python.exe', cpu: 8.7, memory: '64 MB', status: 'Running' },
+            { pid: 7890, name: 'cmd.exe', cpu: 0.5, memory: '8 MB', status: 'Running' }
+        ];
+
+        updateProcessTable(processes);
+    }
+
+    function updateProcesses() {
+        // Simulate process updates
+        const tbody = $('#processTableBody');
+        tbody.find('tr').each(function () {
+            const cpuCell = $(this).find('td:nth-child(4)');
+            const newCpu = (Math.random() * 20).toFixed(1);
+            cpuCell.text(newCpu + '%');
+        });
+    }
+
+    function updateProcessTable(processes) {
+        const tbody = $('#processTableBody');
+        tbody.empty();
+
+        processes.forEach(process => {
+            const row = `
+                <tr>
+                    <td><input type="checkbox" class="process-checkbox" data-pid="${process.pid}"></td>
+                    <td>${process.pid}</td>
+                    <td>${process.name}</td>
+                    <td>${process.cpu}%</td>
+                    <td>${process.memory}</td>
+                    <td><span class="status-success">${process.status}</span></td>
+                </tr>
+            `;
+            tbody.append(row);
+        });
+    }
+
+    function refreshProcesses() {
+        addLogEntry('info', 'Refreshing process list...');
+        loadProcesses();
+        addLogEntry('info', 'Process list updated');
+    }
+
+    function killSelectedProcess() {
+        const selected = $('.process-checkbox:checked');
+        if (selected.length === 0) {
+            alert('Please select a process to kill');
+            return;
+        }
+
+        if (confirm(`Kill ${selected.length} selected process(es)?`)) {
+            selected.each(function () {
+                const pid = $(this).data('pid');
+                $(this).closest('tr').remove();
+                addLogEntry('warning', `Process ${pid} terminated`);
+            });
+        }
+    }
+
+    function filterProcesses(filter) {
+        const rows = $('#processTableBody tr');
+        rows.each(function () {
+            const processName = $(this).find('td:nth-child(3)').text().toLowerCase();
+            if (processName.includes(filter.toLowerCase()) || filter === '') {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+
+    function addLogEntry(level, message) {
+        const timestamp = new Date().toLocaleString();
+        const logEntry = `
+            <div class="log-entry ${level}">
+                <span class="log-time">[${timestamp}]</span>
+                <span class="log-level">${level.toUpperCase()}</span>
+                <span class="log-message">${message}</span>
+            </div>
+        `;
+
+        $('#logContainer').append(logEntry);
+
+        // Auto-scroll to bottom
+        const container = $('#logContainer')[0];
+        container.scrollTop = container.scrollHeight;
+
+        // Keep only last 100 entries
+        const entries = $('#logContainer .log-entry');
+        if (entries.length > 100) {
+            entries.first().remove();
+        }
+    }
+
+    function filterLogs(level) {
+        const entries = $('#logContainer .log-entry');
+        entries.each(function () {
+            if (level === 'all' || $(this).hasClass(level)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+
+    function clearLogs() {
+        if (confirm('Clear all log entries?')) {
+            $('#logContainer').empty();
+            addLogEntry('info', 'Log entries cleared');
+        }
+    }
+
+    function exportLogs() {
+        const logs = [];
+        $('#logContainer .log-entry:visible').each(function () {
+            const time = $(this).find('.log-time').text();
+            const level = $(this).find('.log-level').text();
+            const message = $(this).find('.log-message').text();
+            logs.push(`${time} ${level} ${message}`);
+        });
+
+        const logText = logs.join('\n');
+        const blob = new Blob([logText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `system_logs_${new Date().toISOString().slice(0, 10)}.txt`;
+        a.click();
+
+        URL.revokeObjectURL(url);
+        addLogEntry('info', 'Logs exported successfully');
+    }
+
+    function formatUptime(milliseconds) {
+        const seconds = Math.floor(milliseconds / 1000);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Cleanup on page unload
+    $(window).on('beforeunload', function () {
+        if (monitoringInterval) {
+            clearInterval(monitoringInterval);
+        }
+    });
+</script>
+
+<style>
+    .tool-interface {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid #00ff41;
+        border-radius: 6px;
+    }
+
+    .page-header h2 {
+        color: #00ff41;
+        margin-bottom: 8px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        font-size: 1.4em;
+    }
+
+    .page-header p {
+        font-size: 0.9em;
+        margin: 0;
+    }
+
+    .monitor-dashboard {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 15px;
+    }
+
+    .monitor-card {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: #333;
+        padding: 10px 15px;
+        border-bottom: 1px solid #444;
+    }
+
+    .card-header h4 {
+        color: #00ff41;
+        margin: 0;
+        font-size: 1em;
+    }
+
+    .card-content {
+        padding: 15px;
+    }
+
+    .metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 5px 0;
+    }
+
+    .metric-label {
+        color: #ccc;
+        font-size: 0.85em;
+    }
+
+    .metric-value {
+        color: #fff;
+        font-weight: bold;
+        font-size: 0.85em;
+    }
+
+    .status-success {
+        color: #00ff41 !important;
+    }
+
+    .status-warning {
+        color: #ffc107 !important;
+    }
+
+    .status-danger {
+        color: #ff6b35 !important;
+    }
+
+    .charts-section {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .charts-section h4 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .chart-card {
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 10px;
+    }
+
+    .chart-card h5 {
+        color: #00ff41;
+        margin: 0 0 10px 0;
+        font-size: 0.9em;
+    }
+
+    .chart-placeholder {
+        background: #000;
+        border-radius: 4px;
+        padding: 5px;
+    }
+
+    .chart-placeholder canvas {
+        width: 100%;
+        height: auto;
+    }
+
+    .process-monitor,
+    .system-logs {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .process-monitor h4,
+    .system-logs h4 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .process-controls,
+    .log-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .process-filter,
+    .log-filter {
+        padding: 6px 10px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 0.85em;
+    }
+
+    .process-table-container {
+        overflow-x: auto;
+    }
+
+    .process-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #333;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .process-table th,
+    .process-table td {
+        padding: 8px 12px;
+        text-align: left;
+        border-bottom: 1px solid #444;
+        font-size: 0.85em;
+    }
+
+    .process-table th {
+        background: #444;
+        color: #00ff41;
+        font-weight: bold;
+    }
+
+    .process-table td {
+        color: #ccc;
+    }
+
+    .process-table tr:hover {
+        background: #3a3a3a;
+    }
+
+    .log-container {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+    }
+
+    .log-entry {
+        margin-bottom: 5px;
+        font-size: 0.8em;
+        display: flex;
+        gap: 10px;
+    }
+
+    .log-time {
+        color: #666;
+    }
+
+    .log-level {
+        font-weight: bold;
+        min-width: 60px;
+    }
+
+    .log-message {
+        color: #ccc;
+    }
+
+    .log-entry.info .log-level {
+        color: #17a2b8;
+    }
+
+    .log-entry.warning .log-level {
+        color: #ffc107;
+    }
+
+    .log-entry.error .log-level {
+        color: #ff6b35;
+    }
+
+    .log-entry.critical .log-level {
+        color: #dc3545;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 6px 10px;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        font-size: 0.8em;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #00ff41, #00cc33);
+        color: #000;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(45deg, #ff6b35, #dc3545);
+        color: white;
+    }
+
+    .btn-info {
+        background: linear-gradient(45deg, #17a2b8, #138496);
+        color: white;
+    }
+
+    .btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 5px rgba(0, 255, 65, 0.4);
+    }
+
+    .btn-icon {
+        font-size: 1em;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+
+        .dashboard-grid,
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .process-controls,
+        .log-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .process-filter,
+        .log-filter {
+            width: 100%;
+        }
+    }
+
+    /* Scrollbar Styling */
+    .log-container::-webkit-scrollbar,
+    .process-table-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .log-container::-webkit-scrollbar-track,
+    .process-table-container::-webkit-scrollbar-track {
+        background: #111;
+    }
+
+    .log-container::-webkit-scrollbar-thumb,
+    .process-table-container::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+    }
+
+    .log-container::-webkit-scrollbar-thumb:hover,
+    .process-table-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+{% include "footer.html" %}

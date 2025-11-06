@@ -1,0 +1,852 @@
+{% with previous_page=url_for('webui.agent_list'), title="ICARUS Control Panel" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <section id="main_content">
+        <div class="tool-interface">
+            <!-- Header Section -->
+            <div class="page-header">
+                <h2>🛡️ ICARUS Control Panel</h2>
+                <p>Advanced System Protection and Control Framework</p>
+            </div>
+
+            <!-- ICARUS Dashboard -->
+            <div class="icarus-dashboard">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-icon">🔐</div>
+                        <div class="card-content">
+                            <h3>Encryption Status</h3>
+                            <div class="card-value" id="encryptionStatus">Active</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">🛡️</div>
+                        <div class="card-content">
+                            <h3>Protection Level</h3>
+                            <div class="card-value" id="protectionLevel">Maximum</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">⚡</div>
+                        <div class="card-content">
+                            <h3>System Critical</h3>
+                            <div class="card-value" id="criticalStatus">Enabled</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">🔍</div>
+                        <div class="card-content">
+                            <h3>Anti-Debug</h3>
+                            <div class="card-value" id="antiDebugStatus">Active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ICARUS Modules -->
+            <div class="icarus-modules">
+                <h3>ICARUS Security Modules</h3>
+                <div class="modules-grid">
+                    <div class="module-card" data-module="aetos">
+                        <div class="module-icon">🔐</div>
+                        <h4>Aetos Encryption</h4>
+                        <p>AES-256 encryption with HMAC authentication</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+
+                    <div class="module-card" data-module="prostasia">
+                        <div class="module-icon">🛡️</div>
+                        <h4>Prostasia Protection</h4>
+                        <p>System critical process protection</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+
+                    <div class="module-card" data-module="win32">
+                        <div class="module-icon">⚙️</div>
+                        <h4>Win32 API Control</h4>
+                        <p>Dynamic API loading and protection</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+
+                    <div class="module-card" data-module="mutex">
+                        <div class="module-icon">🔒</div>
+                        <h4>Mutex Control</h4>
+                        <p>Process synchronization and control</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+
+                    <div class="module-card" data-module="registry">
+                        <div class="module-icon">📝</div>
+                        <h4>Registry Manager</h4>
+                        <p>Windows registry manipulation</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+
+                    <div class="module-card" data-module="process">
+                        <div class="module-icon">⚡</div>
+                        <h4>Process Control</h4>
+                        <p>Advanced process management</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+
+                    <div class="module-card" data-module="gpu-ram">
+                        <div class="module-icon">💾</div>
+                        <h4>GPU & RAM Monitor</h4>
+                        <p>Hardware resource monitoring</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+
+                    <div class="module-card" data-module="network">
+                        <div class="module-icon">🌐</div>
+                        <h4>Network Control</h4>
+                        <p>Network communication management</p>
+                        <div class="module-status active">Active</div>
+                        <button class="btn btn-primary module-btn">Configure</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Panel -->
+            <div class="config-panel">
+                <h3>Module Configuration</h3>
+                <div class="config-tabs">
+                    <button class="tab-btn active" data-tab="encryption">Encryption</button>
+                    <button class="tab-btn" data-tab="protection">Protection</button>
+                    <button class="tab-btn" data-tab="monitoring">Monitoring</button>
+                    <button class="tab-btn" data-tab="advanced">Advanced</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="encryption-tab" class="tab-pane active">
+                        <div class="config-section">
+                            <h4>Aetos Encryption Settings</h4>
+                            <div class="form-group">
+                                <label>Master Key:</label>
+                                <input type="password" id="masterKey" placeholder="Enter master encryption key">
+                            </div>
+                            <div class="form-group">
+                                <label>Key Length:</label>
+                                <select id="keyLength">
+                                    <option value="256">256-bit (Recommended)</option>
+                                    <option value="192">192-bit</option>
+                                    <option value="128">128-bit</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Encryption Mode:</label>
+                                <select id="encryptionMode">
+                                    <option value="CBC">CBC (Default)</option>
+                                    <option value="GCM">GCM</option>
+                                    <option value="CFB">CFB</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success">Apply Encryption Settings</button>
+                        </div>
+                    </div>
+
+                    <div id="protection-tab" class="tab-pane">
+                        <div class="config-section">
+                            <h4>Prostasia Protection Settings</h4>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="criticalProcess" checked>
+                                    Enable Critical Process Protection
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="antiDebug" checked>
+                                    Enable Anti-Debug Protection
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="sessionProtection" checked>
+                                    Enable Session End Protection
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Protection Level:</label>
+                                <select id="protectionLevel">
+                                    <option value="maximum">Maximum</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success">Apply Protection Settings</button>
+                        </div>
+                    </div>
+
+                    <div id="monitoring-tab" class="tab-pane">
+                        <div class="config-section">
+                            <h4>System Monitoring Settings</h4>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="gpuMonitoring" checked>
+                                    Enable GPU Monitoring
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="ramMonitoring" checked>
+                                    Enable RAM Monitoring
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="processMonitoring" checked>
+                                    Enable Process Monitoring
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Monitoring Interval:</label>
+                                <select id="monitoringInterval">
+                                    <option value="1000">1 Second</option>
+                                    <option value="5000" selected>5 Seconds</option>
+                                    <option value="10000">10 Seconds</option>
+                                    <option value="30000">30 Seconds</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success">Apply Monitoring Settings</button>
+                        </div>
+                    </div>
+
+                    <div id="advanced-tab" class="tab-pane">
+                        <div class="config-section">
+                            <h4>Advanced ICARUS Settings</h4>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="dynamicApi" checked>
+                                    Enable Dynamic API Loading
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="mutexControl" checked>
+                                    Enable Mutex Control
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="registryProtection" checked>
+                                    Enable Registry Protection
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label>Debug Mode:</label>
+                                <select id="debugMode">
+                                    <option value="disabled">Disabled</option>
+                                    <option value="minimal">Minimal</option>
+                                    <option value="verbose">Verbose</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success">Apply Advanced Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="system-status">
+                <h3>System Status & Logs</h3>
+                <div class="status-grid">
+                    <div class="status-section">
+                        <h4>Active Protections</h4>
+                        <div class="protection-list">
+                            <div class="protection-item active">
+                                <span class="protection-name">Critical Process</span>
+                                <span class="protection-status">✅ Active</span>
+                            </div>
+                            <div class="protection-item active">
+                                <span class="protection-name">Anti-Debug</span>
+                                <span class="protection-status">✅ Active</span>
+                            </div>
+                            <div class="protection-item active">
+                                <span class="protection-name">Encryption</span>
+                                <span class="protection-status">✅ Active</span>
+                            </div>
+                            <div class="protection-item active">
+                                <span class="protection-name">Mutex Control</span>
+                                <span class="protection-status">✅ Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-section">
+                        <h4>System Metrics</h4>
+                        <div class="metrics-list">
+                            <div class="metric-item">
+                                <span class="metric-name">CPU Usage:</span>
+                                <span class="metric-value">23%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Memory Usage:</span>
+                                <span class="metric-value">1.2 GB</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">GPU Usage:</span>
+                                <span class="metric-value">15%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Network I/O:</span>
+                                <span class="metric-value">2.3 MB/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logs-section">
+                    <h4>ICARUS Logs</h4>
+                    <div class="logs-container">
+                        <div class="log-entry info">
+                            <span class="log-time">[12:34:56]</span>
+                            <span class="log-message">ICARUS system initialized successfully</span>
+                        </div>
+                        <div class="log-entry success">
+                            <span class="log-time">[12:35:01]</span>
+                            <span class="log-message">Aetos encryption module activated</span>
+                        </div>
+                        <div class="log-entry success">
+                            <span class="log-time">[12:35:02]</span>
+                            <span class="log-message">Prostasia protection enabled</span>
+                        </div>
+                        <div class="log-entry warning">
+                            <span class="log-time">[12:35:15]</span>
+                            <span class="log-message">Debug attempt detected and blocked</span>
+                        </div>
+                        <div class="log-entry info">
+                            <span class="log-time">[12:35:30]</span>
+                            <span class="log-message">System monitoring active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        initializeIcarus();
+        setupEventHandlers();
+        startMonitoring();
+    });
+
+    function initializeIcarus() {
+        // Initialize dashboard values
+        updateDashboard();
+
+        // Add initialization log
+        addLogEntry('ICARUS Control Panel loaded successfully', 'success');
+        addLogEntry('All security modules operational', 'info');
+    }
+
+    function setupEventHandlers() {
+        // Tab switching
+        $('.tab-btn').on('click', function () {
+            const tabId = $(this).data('tab');
+            switchTab(tabId);
+        });
+
+        // Module configuration buttons
+        $('.module-btn').on('click', function () {
+            const moduleCard = $(this).closest('.module-card');
+            const moduleName = moduleCard.data('module');
+            configureModule(moduleName);
+        });
+
+        // Configuration form submissions
+        $('.config-section button').on('click', function () {
+            const section = $(this).closest('.tab-pane').attr('id');
+            applyConfiguration(section);
+        });
+    }
+
+    function switchTab(tabId) {
+        // Remove active class from all tabs and panes
+        $('.tab-btn').removeClass('active');
+        $('.tab-pane').removeClass('active');
+
+        // Add active class to selected tab and pane
+        $(`.tab-btn[data-tab="${tabId}"]`).addClass('active');
+        $(`#${tabId}-tab`).addClass('active');
+    }
+
+    function configureModule(moduleName) {
+        addLogEntry(`Configuring ${moduleName} module`, 'info');
+
+        // Switch to appropriate configuration tab based on module
+        let targetTab = 'advanced';
+        if (moduleName === 'aetos') targetTab = 'encryption';
+        else if (moduleName === 'prostasia') targetTab = 'protection';
+        else if (moduleName === 'gpu-ram' || moduleName === 'process') targetTab = 'monitoring';
+
+        switchTab(targetTab);
+    }
+
+    function applyConfiguration(section) {
+        let message = '';
+
+        switch (section) {
+            case 'encryption-tab':
+                message = 'Encryption settings applied successfully';
+                break;
+            case 'protection-tab':
+                message = 'Protection settings applied successfully';
+                break;
+            case 'monitoring-tab':
+                message = 'Monitoring settings applied successfully';
+                break;
+            case 'advanced-tab':
+                message = 'Advanced settings applied successfully';
+                break;
+        }
+
+        addLogEntry(message, 'success');
+        updateDashboard();
+    }
+
+    function updateDashboard() {
+        // Simulate real-time updates
+        const statuses = ['Active', 'Enabled', 'Protected', 'Operational'];
+        const levels = ['Maximum', 'High', 'Optimal', 'Secure'];
+
+        $('#encryptionStatus').text(statuses[Math.floor(Math.random() * statuses.length)]);
+        $('#protectionLevel').text(levels[Math.floor(Math.random() * levels.length)]);
+        $('#criticalStatus').text(statuses[Math.floor(Math.random() * statuses.length)]);
+        $('#antiDebugStatus').text(statuses[Math.floor(Math.random() * statuses.length)]);
+    }
+
+    function addLogEntry(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = `
+            <div class="log-entry ${type}">
+                <span class="log-time">[${timestamp}]</span>
+                <span class="log-message">${message}</span>
+            </div>
+        `;
+
+        $('.logs-container').append(logEntry);
+
+        // Auto-scroll to bottom
+        const container = $('.logs-container')[0];
+        container.scrollTop = container.scrollHeight;
+
+        // Keep only last 50 entries
+        const entries = $('.log-entry');
+        if (entries.length > 50) {
+            entries.first().remove();
+        }
+    }
+
+    function startMonitoring() {
+        // Update system metrics every 5 seconds
+        setInterval(() => {
+            updateSystemMetrics();
+            updateDashboard();
+        }, 5000);
+
+        // Add random log entries
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                const events = [
+                    'System scan completed',
+                    'Memory protection active',
+                    'Network traffic monitored',
+                    'Process integrity verified',
+                    'Encryption keys rotated'
+                ];
+                const event = events[Math.floor(Math.random() * events.length)];
+                addLogEntry(event, 'info');
+            }
+        }, 10000);
+    }
+
+    function updateSystemMetrics() {
+        // Simulate real-time metrics
+        const cpu = Math.floor(Math.random() * 50) + 10;
+        const memory = (Math.random() * 2 + 0.5).toFixed(1);
+        const gpu = Math.floor(Math.random() * 30) + 5;
+        const network = (Math.random() * 5 + 0.1).toFixed(1);
+
+        $('.metric-item:nth-child(1) .metric-value').text(cpu + '%');
+        $('.metric-item:nth-child(2) .metric-value').text(memory + ' GB');
+        $('.metric-item:nth-child(3) .metric-value').text(gpu + '%');
+        $('.metric-item:nth-child(4) .metric-value').text(network + ' MB/s');
+    }
+</script>
+
+<style>
+    .tool-interface {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 25px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid #667eea;
+        border-radius: 8px;
+    }
+
+    .page-header h2 {
+        color: #667eea;
+        margin-bottom: 8px;
+        text-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+    }
+
+    .icarus-dashboard {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .dashboard-card {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 0 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .card-icon {
+        font-size: 2em;
+        color: #667eea;
+    }
+
+    .card-content h3 {
+        color: #ccc;
+        margin: 0 0 8px 0;
+        font-size: 0.9em;
+    }
+
+    .card-value {
+        color: #00ff41;
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+
+    .icarus-modules {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .icarus-modules h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+    }
+
+    .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+    }
+
+    .module-card {
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 12px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .module-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .module-icon {
+        font-size: 2em;
+        margin-bottom: 8px;
+        color: #667eea;
+    }
+
+    .module-card h4 {
+        color: #fff;
+        margin: 8px 0;
+        font-size: 0.9em;
+    }
+
+    .module-card p {
+        color: #ccc;
+        font-size: 0.75em;
+        margin-bottom: 8px;
+        line-height: 1.3;
+    }
+
+    .module-status {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.7em;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .module-status.active {
+        background: #00ff41;
+        color: #000;
+    }
+
+    .module-btn {
+        width: 100%;
+        padding: 6px;
+        font-size: 0.8em;
+    }
+
+    .config-panel {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .config-panel h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+    }
+
+    .config-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        background: #333;
+        border: 1px solid #444;
+        color: #ccc;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85em;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+        background: #667eea;
+        color: #fff;
+        border-color: #667eea;
+    }
+
+    .tab-content {
+        min-height: 200px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    .config-section h4 {
+        color: #00ff41;
+        margin-bottom: 12px;
+        font-size: 1em;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #ccc;
+        margin-bottom: 5px;
+        font-size: 0.85em;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        max-width: 300px;
+        padding: 6px 10px;
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 0.85em;
+    }
+
+    .form-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+    }
+
+    .system-status {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .system-status h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+    }
+
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .status-section h4 {
+        color: #00ff41;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+    }
+
+    .protection-list,
+    .metrics-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .protection-item,
+    .metric-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        background: #333;
+        border-radius: 4px;
+        font-size: 0.8em;
+    }
+
+    .protection-name,
+    .metric-name {
+        color: #ccc;
+    }
+
+    .protection-status,
+    .metric-value {
+        color: #00ff41;
+        font-weight: bold;
+    }
+
+    .logs-section h4 {
+        color: #00ff41;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+    }
+
+    .logs-container {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 10px;
+        height: 150px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.75em;
+    }
+
+    .log-entry {
+        margin-bottom: 4px;
+        display: flex;
+        gap: 8px;
+    }
+
+    .log-time {
+        color: #666;
+    }
+
+    .log-message {
+        color: #ccc;
+    }
+
+    .log-entry.success .log-message {
+        color: #00ff41;
+    }
+
+    .log-entry.warning .log-message {
+        color: #ffc107;
+    }
+
+    .log-entry.error .log-message {
+        color: #ff6b35;
+    }
+
+    .log-entry.info .log-message {
+        color: #17a2b8;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+
+        .dashboard-grid,
+        .modules-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .config-tabs {
+            flex-direction: column;
+        }
+
+        .status-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Scrollbar styling */
+    .logs-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .logs-container::-webkit-scrollbar-track {
+        background: #111;
+    }
+
+    .logs-container::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 3px;
+    }
+
+    .logs-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+{% include "footer.html" %}

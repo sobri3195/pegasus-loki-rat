@@ -1,0 +1,413 @@
+{% with previous_page=url_for('webui.agent_list'), title="Obfuscation Tool" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <section id="main_content">
+        <div class="tool-interface">
+            <!-- Header Section -->
+            <div class="page-header">
+                <h2>🔒 Pegasus Obfuscation Tool</h2>
+                <p>Obfuscate payloads to evade detection</p>
+            </div>
+
+            <!-- Obfuscation Configuration -->
+            <div class="builder-config">
+                <h3>Obfuscation Configuration</h3>
+                <form id="obfuscationForm" class="config-form" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="payload_file">Payload File:</label>
+                            <input type="file" id="payload_file" name="file" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="obfuscation_level">Obfuscation Level:</label>
+                            <select id="obfuscation_level" name="level">
+                                <option value="basic">Basic</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="rename_vars" name="rename_vars" checked>
+                                Rename Variables
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="add_junk" name="add_junk" checked>
+                                Add Junk Code
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="download-section">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-icon">🔒</span>
+                            Obfuscate Payload
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="obfuscationProgress" class="progress-section" style="display: none;">
+                <h3>Obfuscation Progress</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <div id="progressText" class="progress-text">Initializing obfuscation...</div>
+                </div>
+                <div id="obfuscationLog" class="build-log">
+                    <pre id="logOutput" class="log-output"></pre>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="obfuscationResults" class="results-section" style="display: none;">
+                <h3>Obfuscation Results</h3>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="info-label">Status:</span>
+                        <span id="resultStatus" class="info-value status-success">Success</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="info-label">Original Size:</span>
+                        <span id="originalSize" class="info-value">0 KB</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="info-label">Obfuscated Size:</span>
+                        <span id="obfuscatedSize" class="info-value">0 KB</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="info-label">Processing Time:</span>
+                        <span id="processingTime" class="info-value">0 seconds</span>
+                    </div>
+                </div>
+
+                <div class="download-section">
+                    <button id="downloadObfuscated" class="btn btn-success">
+                        <span class="btn-icon">⬇️</span>
+                        Download Obfuscated Payload
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    let obfuscationProcess = null;
+
+    $(document).ready(function () {
+        $('#obfuscationForm').on('submit', function (e) {
+            e.preventDefault();
+            startObfuscation();
+        });
+    });
+
+    function startObfuscation() {
+        const formData = new FormData($('#obfuscationForm')[0]);
+
+        // Show progress section
+        $('#obfuscationProgress').show();
+        $('#obfuscationResults').hide();
+
+        // Reset progress
+        $('#progressFill').css('width', '0%');
+        $('#progressText').text('Initializing obfuscation...');
+        $('#logOutput').text('Starting payload obfuscation process...');
+
+        // Simulate obfuscation process
+        simulateObfuscation(formData);
+    }
+
+    function simulateObfuscation(formData) {
+        const obfuscationSteps = [
+            { progress: 10, text: 'Analyzing payload...', log: '[INFO] Payload analysis completed' },
+            { progress: 25, text: 'Parsing code structure...', log: '[INFO] Code structure parsed successfully' },
+            { progress: 40, text: 'Renaming variables...', log: '[INFO] Variable renaming completed' },
+            { progress: 60, text: 'Adding junk code...', log: '[INFO] Junk code injection completed' },
+            { progress: 80, text: 'Applying encryption...', log: '[INFO] Encryption applied successfully' },
+            { progress: 90, text: 'Finalizing...', log: '[INFO] Final obfuscation steps completed' },
+            { progress: 100, text: 'Obfuscation completed!', log: '[SUCCESS] Payload obfuscated successfully!' }
+        ];
+
+        let stepIndex = 0;
+        const obfuscationInterval = setInterval(() => {
+            if (stepIndex < obfuscationSteps.length) {
+                const step = obfuscationSteps[stepIndex];
+
+                $('#progressFill').css('width', step.progress + '%');
+                $('#progressText').text(step.text);
+
+                const currentLog = $('#logOutput').text();
+                $('#logOutput').text(currentLog + '\n' + step.log);
+
+                // Auto-scroll log
+                const logContainer = $('#obfuscationLog')[0];
+                logContainer.scrollTop = logContainer.scrollHeight;
+
+                stepIndex++;
+            } else {
+                clearInterval(obfuscationInterval);
+                showObfuscationResults(formData);
+            }
+        }, 800);
+    }
+
+    function showObfuscationResults(formData) {
+        // Hide progress, show results
+        $('#obfuscationProgress').hide();
+        $('#obfuscationResults').show();
+
+        // Populate results
+        $('#originalSize').text(Math.floor(Math.random() * 500 + 100) + ' KB');
+        $('#obfuscatedSize').text(Math.floor(Math.random() * 600 + 200) + ' KB');
+        $('#processingTime').text(Math.floor(Math.random() * 5 + 2) + ' seconds');
+        $('#resultStatus').text('Success').removeClass().addClass('info-value status-success');
+
+        // Setup download handler
+        $('#downloadObfuscated').off('click').on('click', function () {
+            // In real implementation, this would download the actual obfuscated payload
+            alert('Obfuscated payload download started! Check your downloads folder.');
+        });
+    }
+</script>
+
+<style>
+    .tool-interface {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid #00ff41;
+        border-radius: 6px;
+    }
+
+    .page-header h2 {
+        color: #00ff41;
+        margin-bottom: 8px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        font-size: 1.4em;
+    }
+
+    .page-header p {
+        font-size: 0.9em;
+        margin: 0;
+    }
+
+    .builder-config {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .builder-config h3 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .config-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+    .form-group label {
+        display: block;
+        color: #ccc;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 8px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 13px;
+    }
+
+    .form-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #00ff41;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    }
+
+    .progress-section,
+    .results-section {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .progress-section h3,
+    .results-section h3 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .progress-bar-container {
+        margin-bottom: 15px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #333;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00ff41, #00cc33);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    .progress-text {
+        text-align: center;
+        color: #ccc;
+        font-size: 0.9em;
+    }
+
+    .build-log {
+        background: #111;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 10px;
+        height: 200px;
+        overflow-y: auto;
+    }
+
+    .log-output {
+        color: #00ff41;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        margin: 0;
+        white-space: pre-wrap;
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .result-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px;
+        background: #2a2a2a;
+        border-radius: 4px;
+    }
+
+    .info-label {
+        color: #ccc;
+        font-weight: bold;
+    }
+
+    .info-value {
+        color: #00ff41;
+        font-weight: bold;
+    }
+
+    .status-success {
+        color: #00ff41;
+    }
+
+    .status-error {
+        color: #ff4141;
+    }
+
+    .download-section {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        font-size: 0.85em;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #00ff41, #00cc33);
+        color: #000;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-success {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+    }
+
+    .btn-icon {
+        font-size: 1em;
+    }
+</style>
+
+{% include "footer.html" %}

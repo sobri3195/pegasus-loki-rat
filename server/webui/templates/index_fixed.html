@@ -1,0 +1,25 @@
+{% with title="Dashboard" %}
+{% include "header_fixed.html" %}
+{% endwith %}
+
+<div class="container">
+  <!-- Welcome Section -->
+  <section class="welcome-section">
+    <div class="welcome-hero">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Welcome to Pegasus Loki RAT</h1>
+          <p class="hero-subtitle">Advanced Remote Administration & Security Testing Platform</p>
+          <p class="hero-description">
+            Comprehensive remote access and security testing suite with advanced encryption,
+            real-time monitoring, and powerful exploitation frameworks.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <a href="{{ url_for('webui.login') }}" class="btn btn-primary btn-large">
+            <span class="btn-icon">🔐</span>
+            Login
+          </a>
+          <button onclick="pegasus.launchTool('agent-builder')" class="btn btn-secondary btn-large">
+            <span class="btn-icon">🔧</span>
+            Build Agent
