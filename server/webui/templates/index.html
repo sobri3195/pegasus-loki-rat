@@ -1,16 +1,1053 @@
-{% with title="Ares" %}
+{% with title="Dashboard" %}
 {% include "header.html" %}
 {% endwith %}
 
 <div class="container">
-	<section id="main_content">
+  <!-- Welcome Section -->
+  <section class="welcome-section">
+    <div class="welcome-hero">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Welcome to Pegasus Loki RAT</h1>
+          <p class="hero-subtitle">Advanced Remote Administration & Security Testing Platform</p>
+          <p class="hero-description">
+            Comprehensive remote access and security testing suite with advanced encryption,
+            real-time monitoring, and powerful exploitation frameworks.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <a href="{{ url_for('webui.agent_list') }}" class="btn btn-primary btn-large">
+            <span class="btn-icon">🤖</span>
+            Manage Agents
+          </a>
+          <button onclick="pegasus.launchTool('agent-builder')" class="btn btn-secondary btn-large">
+            <span class="btn-icon">🔧</span>
+            Build Agent
+          </button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-dashboard">
+          <div class="dashboard-screen">
+            <div class="screen-header">
+              <div class="screen-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="screen-title">Pegasus Dashboard</span>
+            </div>
+            <div class="screen-content">
+              <div class="screen-stats">
+                <div class="screen-stat">
+                  <span class="stat-value">0</span>
+                  <span class="stat-label">Agents</span>
+                </div>
+                <div class="screen-stat">
+                  <span class="stat-value">7</span>
+                  <span class="stat-label">Tools</span>
+                </div>
+              </div>
+              <div class="screen-graph">
+                <div class="graph-bars">
+                  <div class="bar" style="height: 60%"></div>
+                  <div class="bar" style="height: 80%"></div>
+                  <div class="bar" style="height: 40%"></div>
+                  <div class="bar" style="height: 90%"></div>
+                  <div class="bar" style="height: 70%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <p>Welcome to Loki.Rat.</p>
-    <ul>
-    <li><a href="{{ url_for('webui.agent_list') }}">Bot list</a></li>
-    </ul>
+  <!-- Quick Stats -->
+  <section class="quick-stats">
+    <div class="stats-grid">
+      <div class="stat-card card-glass">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-content">
+          <h3>Connected Agents</h3>
+          <div class="stat-number" id="dashboard-agent-count">0</div>
+          <div class="stat-change positive">
+            <span class="change-icon">↗</span>
+            <span class="change-text">Ready to connect</span>
+          </div>
+        </div>
+      </div>
 
+      <div class="stat-card card-glass">
+        <div class="stat-icon">🛠️</div>
+        <div class="stat-content">
+          <h3>Available Tools</h3>
+          <div class="stat-number">7</div>
+          <div class="stat-change positive">
+            <span class="change-icon">✓</span>
+            <span class="change-text">All operational</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card card-glass">
+        <div class="stat-icon">🔒</div>
+        <div class="stat-content">
+          <h3>Security Status</h3>
+          <div class="stat-number">100%</div>
+          <div class="stat-change positive">
+            <span class="change-icon">🛡️</span>
+            <span class="change-text">Protected</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card card-glass">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-content">
+          <h3>System Performance</h3>
+          <div class="stat-number" id="dashboard-performance">95%</div>
+          <div class="stat-change positive">
+            <span class="change-icon">📈</span>
+            <span class="change-text">Optimal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Overview -->
+  <section class="tools-overview">
+    <div class="section-header">
+      <h2>Available Tools & Frameworks</h2>
+      <p>Comprehensive security testing and remote administration tools</p>
+    </div>
+
+    <div class="tools-grid">
+      <div class="tool-card card-glass" data-tool="web-scanner">
+        <div class="tool-header">
+          <div class="tool-icon">🔍</div>
+          <div class="tool-status status-online">
+            <span class="status-dot"></span>
+            Ready
+          </div>
+        </div>
+        <div class="tool-content">
+          <h3>Web Vulnerability Scanner</h3>
+          <p>Advanced web application security scanner with comprehensive vulnerability detection and reporting
+            capabilities.</p>
+          <div class="tool-features">
+            <span class="feature-tag">SQL Injection</span>
+            <span class="feature-tag">XSS Detection</span>
+            <span class="feature-tag">Directory Traversal</span>
+          </div>
+        </div>
+        <div class="tool-actions">
+          <a href="{{ url_for('webui.web_scanner') }}" class="btn btn-primary">Launch Scanner</a>
+        </div>
+      </div>
+
+      <div class="tool-card card-glass" data-tool="exploit">
+        <div class="tool-header">
+          <div class="tool-icon">💥</div>
+          <div class="tool-status status-online">
+            <span class="status-dot"></span>
+            Ready
+          </div>
+        </div>
+        <div class="tool-content">
+          <h3>Exploit Framework</h3>
+          <p>BTS API-powered exploitation framework for penetration testing and security assessment operations.</p>
+          <div class="tool-features">
+            <span class="feature-tag">Buffer Overflow</span>
+            <span class="feature-tag">RCE Exploits</span>
+            <span class="feature-tag">Privilege Escalation</span>
+          </div>
+        </div>
+        <div class="tool-actions">
+          <a href="{{ url_for('webui.exploit_tool') }}" class="btn btn-primary">Launch Framework</a>
+        </div>
+      </div>
+
+      <div class="tool-card card-glass" data-tool="hvnc">
+        <div class="tool-header">
+          <div class="tool-icon">🖥️</div>
+          <div class="tool-status status-online">
+            <span class="status-dot"></span>
+            Ready
+          </div>
+        </div>
+        <div class="tool-content">
+          <h3>HVNC Control</h3>
+          <p>Hidden Virtual Network Computing for stealth remote desktop access and control operations.</p>
+          <div class="tool-features">
+            <span class="feature-tag">Remote Desktop</span>
+            <span class="feature-tag">File Transfer</span>
+            <span class="feature-tag">Process Control</span>
+          </div>
+        </div>
+        <div class="tool-actions">
+          <a href="{{ url_for('webui.hvnc_tool') }}" class="btn btn-primary">Launch HVNC</a>
+        </div>
+      </div>
+
+      <div class="tool-card card-glass" data-tool="pantheon">
+        <div class="tool-header">
+          <div class="tool-icon">🏛️</div>
+          <div class="tool-status status-online">
+            <span class="status-dot"></span>
+            Ready
+          </div>
+        </div>
+        <div class="tool-content">
+          <h3>Pantheon V2</h3>
+          <p>Advanced Remote Administration Tool with comprehensive system control and monitoring capabilities.</p>
+          <div class="tool-features">
+            <span class="feature-tag">System Control</span>
+            <span class="feature-tag">Registry Editor</span>
+            <span class="feature-tag">Keylogger</span>
+          </div>
+        </div>
+        <div class="tool-actions">
+          <a href="{{ url_for('webui.pantheon_tool') }}" class="btn btn-primary">Launch Pantheon</a>
+        </div>
+      </div>
+
+      <div class="tool-card card-glass" data-tool="icarus">
+        <div class="tool-header">
+          <div class="tool-icon">🛡️</div>
+          <div class="tool-status status-online">
+            <span class="status-dot"></span>
+            Ready
+          </div>
+        </div>
+        <div class="tool-content">
+          <h3>ICARUS Security Framework</h3>
+          <p>Advanced security framework with encryption, protection, and anti-analysis capabilities.</p>
+          <div class="tool-features">
+            <span class="feature-tag">AES-256 Encryption</span>
+            <span class="feature-tag">Anti-Debug</span>
+            <span class="feature-tag">Process Protection</span>
+          </div>
+        </div>
+        <div class="tool-actions">
+          <a href="{{ url_for('webui.icarus_control') }}" class="btn btn-primary">Launch ICARUS</a>
+        </div>
+      </div>
+
+      <div class="tool-card card-glass" data-tool="agent-builder">
+        <div class="tool-header">
+          <div class="tool-icon">🔧</div>
+          <div class="tool-status status-online">
+            <span class="status-dot"></span>
+            Ready
+          </div>
+        </div>
+        <div class="tool-content">
+          <h3>Agent Builder</h3>
+          <p>Custom payload generation tool with advanced evasion techniques and configuration options.</p>
+          <div class="tool-features">
+            <span class="feature-tag">Custom Payloads</span>
+            <span class="feature-tag">Evasion Techniques</span>
+            <span class="feature-tag">Multi-Platform</span>
+          </div>
+        </div>
+        <div class="tool-actions">
+          <button onclick="pegasus.launchTool('agent-builder')" class="btn btn-primary">Build Agent</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Activity -->
+  <section class="recent-activity">
+    <div class="section-header">
+      <h2>System Activity</h2>
+      <p>Real-time system events and notifications</p>
+    </div>
+
+    <div class="activity-container">
+      <div class="activity-feed">
+        <div class="activity-item">
+          <div class="activity-icon success">✓</div>
+          <div class="activity-content">
+            <div class="activity-title">System Initialized</div>
+            <div class="activity-description">Pegasus Loki RAT dashboard loaded successfully</div>
+            <div class="activity-time">Just now</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon info">ℹ️</div>
+          <div class="activity-content">
+            <div class="activity-title">Security Framework Active</div>
+            <div class="activity-description">ICARUS protection modules are operational</div>
+            <div class="activity-time">2 minutes ago</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon warning">⚠️</div>
+          <div class="activity-content">
+            <div class="activity-title">Waiting for Agents</div>
+            <div class="activity-description">No agents currently connected to the server</div>
+            <div class="activity-time">5 minutes ago</div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon success">🛠️</div>
+          <div class="activity-content">
+            <div class="activity-title">Tools Loaded</div>
+            <div class="activity-description">All 7 security tools are ready for deployment</div>
+            <div class="activity-time">10 minutes ago</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="system-metrics">
+        <h3>System Metrics</h3>
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <div class="metric-label">CPU Usage</div>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 25%"></div>
+            </div>
+            <div class="metric-value">25%</div>
+          </div>
+
+          <div class="metric-item">
+            <div class="metric-label">Memory Usage</div>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 40%"></div>
+            </div>
+            <div class="metric-value">40%</div>
+          </div>
+
+          <div class="metric-item">
+            <div class="metric-label">Network I/O</div>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 15%"></div>
+            </div>
+            <div class="metric-value">15%</div>
+          </div>
+
+          <div class="metric-item">
+            <div class="metric-label">Disk Usage</div>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 60%"></div>
+            </div>
+            <div class="metric-value">60%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="quick-actions">
+    <div class="section-header">
+      <h2>Quick Actions</h2>
+      <p>Frequently used operations and shortcuts</p>
+    </div>
+
+    <div class="actions-grid">
+      <div class="action-card">
+        <div class="action-icon">🤖</div>
+        <h3>View Agents</h3>
+        <p>Manage connected agents and execute commands</p>
+        <a href="{{ url_for('webui.agent_list') }}" class="btn btn-secondary">Go to Agents</a>
+      </div>
+
+      <div class="action-card">
+        <div class="action-icon">🔧</div>
+        <h3>Build Agent</h3>
+        <p>Create custom agent payloads with advanced options</p>
+        <button onclick="pegasus.launchTool('agent-builder')" class="btn btn-secondary">Open Builder</button>
+      </div>
+
+      <div class="action-card">
+        <div class="action-icon">📊</div>
+        <h3>System Monitor</h3>
+        <p>Real-time system monitoring and performance metrics</p>
+        <button onclick="pegasus.launchTool('system-monitor')" class="btn btn-secondary">Open Monitor</button>
+      </div>
+
+      <div class="action-card">
+        <div class="action-icon">🔑</div>
+        <h3>Settings</h3>
+        <p>Configure system settings and change password</p>
+        <a href="{{ url_for('webui.change_password') }}" class="btn btn-secondary">Open Settings</a>
+      </div>
+    </div>
   </section>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    initializeDashboard();
+    startDashboardUpdates();
+  });
+
+  function initializeDashboard() {
+    // Update agent count
+    updateAgentCount();
+
+    // Animate stats on load
+    animateStats();
+
+    // Initialize activity feed
+    updateActivityFeed();
+
+    // Start system metrics animation
+    animateMetrics();
+  }
+
+  function updateAgentCount() {
+    fetch('/api/agents/count')
+      .then(response => response.json())
+      .then(data => {
+        const count = data.count || 0;
+        document.getElementById('dashboard-agent-count').textContent = count;
+
+        // Update hero screen
+        const screenStat = document.querySelector('.screen-stat .stat-value');
+        if (screenStat) {
+          screenStat.textContent = count;
+        }
+      })
+      .catch(error => console.error('Failed to update agent count:', error));
+  }
+
+  function animateStats() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach((stat, index) => {
+      const finalValue = stat.textContent;
+      stat.textContent = '0';
+
+      setTimeout(() => {
+        animateNumber(stat, 0, parseInt(finalValue) || 0, 1000);
+      }, index * 200);
+    });
+  }
+
+  function animateNumber(element, start, end, duration) {
+    const startTime = performance.now();
+
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const current = Math.floor(start + (end - start) * progress);
+      element.textContent = end.toString().includes('%') ? current + '%' : current;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  function updateActivityFeed() {
+    // Add real-time activity items
+    const activities = [
+      {
+        icon: 'success',
+        title: 'Dashboard Loaded',
+        description: 'All components initialized successfully',
+        time: 'Just now'
+      }
+    ];
+
+    // This would typically fetch from an API
+    // For now, we'll just update timestamps
+    updateActivityTimestamps();
+  }
+
+  function updateActivityTimestamps() {
+    const timeElements = document.querySelectorAll('.activity-time');
+    timeElements.forEach((element, index) => {
+      const minutes = index * 2 + 1;
+      element.textContent = minutes === 1 ? 'Just now' : `${minutes} minutes ago`;
+    });
+  }
+
+  function animateMetrics() {
+    const metricFills = document.querySelectorAll('.metric-fill');
+
+    metricFills.forEach((fill, index) => {
+      const width = fill.style.width;
+      fill.style.width = '0%';
+
+      setTimeout(() => {
+        fill.style.transition = 'width 1s ease-out';
+        fill.style.width = width;
+      }, index * 200);
+    });
+  }
+
+  function startDashboardUpdates() {
+    // Update metrics periodically
+    setInterval(() => {
+      updateSystemMetrics();
+      updatePerformanceStats();
+    }, 30000);
+
+    // Update activity feed
+    setInterval(updateActivityTimestamps, 60000);
+  }
+
+  function updateSystemMetrics() {
+    // Simulate metric updates
+    const metrics = [
+      { selector: '.metric-item:nth-child(1) .metric-fill', min: 20, max: 40 },
+      { selector: '.metric-item:nth-child(2) .metric-fill', min: 30, max: 60 },
+      { selector: '.metric-item:nth-child(3) .metric-fill', min: 10, max: 30 },
+      { selector: '.metric-item:nth-child(4) .metric-fill', min: 50, max: 80 }
+    ];
+
+    metrics.forEach(metric => {
+      const element = document.querySelector(metric.selector);
+      const valueElement = element.parentElement.querySelector('.metric-value');
+
+      if (element && valueElement) {
+        const newValue = Math.floor(Math.random() * (metric.max - metric.min) + metric.min);
+        element.style.width = newValue + '%';
+        valueElement.textContent = newValue + '%';
+      }
+    });
+  }
+
+  function updatePerformanceStats() {
+    const performanceElement = document.getElementById('dashboard-performance');
+    if (performanceElement) {
+      const performance = Math.floor(Math.random() * 10) + 90; // 90-100%
+      animateNumber(performanceElement, parseInt(performanceElement.textContent), performance, 500);
+    }
+  }
+</script>
+
+<style>
+  /* Welcome Section */
+  .welcome-section {
+    margin-bottom: 4rem;
+  }
+
+  .welcome-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    min-height: 60vh;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .hero-description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-dashboard {
+    perspective: 1000px;
+  }
+
+  .dashboard-screen {
+    width: 400px;
+    height: 300px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-accent);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-primary);
+    transform: rotateY(-15deg) rotateX(5deg);
+    animation: screenFloat 6s ease-in-out infinite;
+  }
+
+  @keyframes screenFloat {
+
+    0%,
+    100% {
+      transform: rotateY(-15deg) rotateX(5deg) translateY(0);
+    }
+
+    50% {
+      transform: rotateY(-15deg) rotateX(5deg) translateY(-10px);
+    }
+  }
+
+  .screen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-primary);
+  }
+
+  .screen-dots {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .dot-red {
+    background: #ff5f57;
+  }
+
+  .dot-yellow {
+    background: #ffbd2e;
+  }
+
+  .dot-green {
+    background: #28ca42;
+  }
+
+  .screen-title {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .screen-content {
+    padding: 1.5rem;
+    height: calc(100% - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .screen-stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .screen-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .screen-stat .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .screen-stat .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .screen-graph {
+    flex: 1;
+    display: flex;
+    align-items: end;
+  }
+
+  .graph-bars {
+    display: flex;
+    gap: 0.5rem;
+    align-items: end;
+    width: 100%;
+    height: 80px;
+  }
+
+  .bar {
+    flex: 1;
+    background: var(--gradient-primary);
+    border-radius: 2px 2px 0 0;
+    animation: barGrow 2s ease-out;
+  }
+
+  @keyframes barGrow {
+    from {
+      height: 0;
+    }
+  }
+
+  /* Quick Stats */
+  .quick-stats {
+    margin-bottom: 4rem;
+  }
+
+  .stat-change {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .stat-change.positive {
+    color: var(--primary-green);
+  }
+
+  .change-icon {
+    font-size: 1rem;
+  }
+
+  /* Tools Overview */
+  .tools-overview {
+    margin-bottom: 4rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .section-header p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .tool-header .tool-icon {
+    font-size: 2rem;
+    color: var(--text-primary);
+  }
+
+  .tool-content h3 {
+    color: var(--text-primary);
+    margin: 0 0 0.8rem 0;
+    font-size: 1.2rem;
+  }
+
+  .tool-content p {
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+  }
+
+  .tool-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-tag {
+    background: rgba(0, 255, 65, 0.1);
+    color: var(--primary-green);
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(0, 255, 65, 0.3);
+  }
+
+  .tool-actions {
+    margin-top: auto;
+  }
+
+  /* Recent Activity */
+  .recent-activity {
+    margin-bottom: 4rem;
+  }
+
+  .activity-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+
+  .activity-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    transition: var(--transition-normal);
+  }
+
+  .activity-item:hover {
+    border-color: var(--border-accent);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+  }
+
+  .activity-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .activity-icon.success {
+    background: rgba(0, 255, 65, 0.2);
+    color: var(--primary-green);
+  }
+
+  .activity-icon.info {
+    background: rgba(23, 162, 184, 0.2);
+    color: #17a2b8;
+  }
+
+  .activity-icon.warning {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+  }
+
+  .activity-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+  }
+
+  .activity-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .activity-time {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  .system-metrics {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: fit-content;
+  }
+
+  .system-metrics h3 {
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
+  }
+
+  .metrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .metric-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .metric-bar {
+    height: 8px;
+    background: var(--bg-primary);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .metric-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .metric-value {
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    margin-bottom: 4rem;
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .action-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .action-card:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-primary);
+    transform: translateY(-5px);
+  }
+
+  .action-icon {
+    font-size: 3rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .action-card h3 {
+    color: var(--text-primary);
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .action-card p {
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .welcome-hero {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: 2.8rem;
+    }
+
+    .dashboard-screen {
+      transform: none;
+      width: 350px;
+      height: 250px;
+    }
+
+    .activity-container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.2rem;
+    }
+
+    .hero-actions {
+      justify-content: center;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+    }
+
+    .stats-grid,
+    .tools-grid,
+    .actions-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-screen {
+      width: 300px;
+      height: 200px;
+    }
+
+    .screen-stats {
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-title {
+      font-size: 1.8rem;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-large {
+      width: 100%;
+    }
+
+    .tool-features {
+      justify-content: center;
+    }
+  }
+</style>
 
 {% include "footer.html" %}

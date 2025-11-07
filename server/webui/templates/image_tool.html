@@ -1,0 +1,341 @@
+{% extends "header.html" %}
+{% block title %}Image Codec Tool{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h2 class="page-title">
+      <span class="title-icon">🖼️</span>
+      Image Codec Tool
+    </h2>
+    <p class="page-subtitle">Encode and decode images using advanced compression algorithms</p>
+  </div>
+
+  <div class="card-grid">
+    <!-- Encoding Section -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <span class="card-icon">🔒</span>
+          Image Encoding
+        </h3>
+        <p class="card-description">Compress images using JPEG or PNG algorithms</p>
+      </div>
+      <div class="card-body">
+        <form id="encode-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="image-file">Select Image:</label>
+            <input type="file" id="image-file" name="image" accept="image/*" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="compression-type">Compression Type:</label>
+            <select id="compression-type" name="compression_type">
+              <option value="jpeg">JPEG</option>
+              <option value="png">PNG (LZW)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="quality">Quality (1-100):</label>
+            <input type="range" id="quality" name="quality" min="1" max="100" value="90">
+            <span id="quality-value">90</span>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-icon">⚡</span>
+            Encode Image
+          </button>
+        </form>
+        
+        <div id="encode-result" class="result-section" style="display: none;">
+          <h4>Encoding Result:</h4>
+          <div class="result-content">
+            <p>Encoded Size: <span id="encoded-size"></span></p>
+            <p>Status: <span id="encode-status"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decoding Section -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <span class="card-icon">🔓</span>
+          Image Decoding
+        </h3>
+        <p class="card-description">Decompress encoded image data</p>
+      </div>
+      <div class="card-body">
+        <form id="decode-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="encoded-file">Select Encoded Data:</label>
+            <input type="file" id="encoded-file" name="encoded" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-icon">⚡</span>
+            Decode Image
+          </button>
+        </form>
+        
+        <div id="decode-result" class="result-section" style="display: none;">
+          <h4>Decoding Result:</h4>
+          <div class="result-content">
+            <p>Status: <span id="decode-status"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+  
+  .title-icon {
+    margin-right: 0.5rem;
+  }
+  
+  .page-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+  }
+  
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+  }
+  
+  .card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-primary);
+    overflow: hidden;
+  }
+  
+  .card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-primary);
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+  }
+  
+  .card-icon {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+  }
+  
+  .card-description {
+    color: var(--text-muted);
+    margin: 0;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-primary);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(0, 255, 65, 0.2);
+  }
+  
+  input[type="range"] {
+    width: calc(100% - 40px);
+    display: inline-block;
+  }
+  
+  #quality-value {
+    display: inline-block;
+    width: 30px;
+    text-align: right;
+    color: var(--text-primary);
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    border: none;
+  }
+  
+  .btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+  }
+  
+  .btn-icon {
+    margin-right: 0.5rem;
+  }
+  
+  .result-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid var(--primary-green);
+  }
+  
+  .result-section h4 {
+    margin-top: 0;
+    color: var(--text-primary);
+  }
+  
+  .result-content p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+  }
+</style>
+
+<script>
+  // Update quality value display
+  document.getElementById('quality').addEventListener('input', function() {
+    document.getElementById('quality-value').textContent = this.value;
+  });
+
+  // Handle image encoding
+  document.getElementById('encode-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    const imageFile = document.getElementById('image-file').files[0];
+    const compressionType = document.getElementById('compression-type').value;
+    const quality = document.getElementById('quality').value;
+    
+    if (!imageFile) {
+      alert('Please select an image file');
+      return;
+    }
+    
+    formData.append('image', imageFile);
+    formData.append('use_jpeg', compressionType === 'jpeg' ? 'true' : 'false');
+    formData.append('quality', quality);
+    
+    // Show loading state
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<span class="btn-icon">⏳</span> Encoding...';
+    submitButton.disabled = true;
+    
+    fetch('/api/image-codec/encode', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        document.getElementById('encoded-size').textContent = data.encoded_size + ' bytes';
+        document.getElementById('encode-status').textContent = data.message;
+        document.getElementById('encode-result').style.display = 'block';
+      } else {
+        document.getElementById('encode-status').textContent = 'Error: ' + data.error;
+        document.getElementById('encode-result').style.display = 'block';
+      }
+    })
+    .catch(error => {
+      document.getElementById('encode-status').textContent = 'Error: ' + error.message;
+      document.getElementById('encode-result').style.display = 'block';
+    })
+    .finally(() => {
+      submitButton.innerHTML = originalText;
+      submitButton.disabled = false;
+    });
+  });
+
+  // Handle image decoding
+  document.getElementById('decode-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    const encodedFile = document.getElementById('encoded-file').files[0];
+    
+    if (!encodedFile) {
+      alert('Please select encoded data file');
+      return;
+    }
+    
+    formData.append('data', encodedFile);
+    
+    // Show loading state
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<span class="btn-icon">⏳</span> Decoding...';
+    submitButton.disabled = true;
+    
+    fetch('/api/image-codec/decode', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        document.getElementById('decode-status').textContent = data.message;
+        document.getElementById('decode-result').style.display = 'block';
+      } else {
+        document.getElementById('decode-status').textContent = 'Error: ' + data.error;
+        document.getElementById('decode-result').style.display = 'block';
+      }
+    })
+    .catch(error => {
+      document.getElementById('decode-status').textContent = 'Error: ' + error.message;
+      document.getElementById('decode-result').style.display = 'block';
+    })
+    .finally(() => {
+      submitButton.innerHTML = originalText;
+      submitButton.disabled = false;
+    });
+  });
+</script>
+{% endblock %}

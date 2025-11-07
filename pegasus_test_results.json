@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-09-09 03:06:07",
+  "total_tests": 6,
+  "passed_tests": 5,
+  "results": {
+    "crypto": {
+      "success": true,
+      "original": "Pegasus-Loki test verisi: ğüşıöç",
+      "encrypted_length": 128,
+      "decrypted": "Pegasus-Loki test verisi: ğüşıöç"
+    },
+    "security": {
+      "success": true,
+      "mutex_test": true,
+      "debugger_present": 0,
+      "sandbox_detected": false,
+      "sandbox_indicators": [],
+      "security_status": {
+        "security_initialized": false,
+        "mutex_created": null,
+        "is_admin": 0,
+        "debugger_present": 0
+      }
+    },
+    "usb": {
+      "success": true,
+      "removable_drives": [],
+      "manager_status": {
+        "enabled": false,
+        "running": false,
+        "agent_path": null
+      }
+    },
+    "hvnc": {
+      "success": true,
+      "status": {
+        "running": false,
+        "hidden_desktop_created": null,
+        "vnc_server_running": null,
+        "platform_supported": true,
+        "pil_available": true
+      },
+      "platform_supported": true
+    },
+    "server_api": {
+      "success": false,
+      "error": "HTTPConnectionPool(host='localhost', port=8080): Max retries exceeded with url: /api/test (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001887EC89090>: Failed to establish a new connection: [WinError 10061] Hedef makine etkin olarak reddettiğinden bağlantı kurulamadı'))"
+    },
+    "agent_integration": {
+      "success": true,
+      "agent_info": {
+        "uid": "d18eaadc-40eb-42",
+        "hostname": "ayzio",
+        "username": "mrtko",
+        "platform": "Windows 11"
+      },
+      "initialized": true
+    }
+  }
+}

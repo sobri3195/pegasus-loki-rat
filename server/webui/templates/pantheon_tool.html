@@ -1,0 +1,1188 @@
+{% with previous_page=url_for('webui.agent_list'), title="Pantheon V2" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <section id="main_content">
+        <div class="tool-interface">
+            <!-- Header Section -->
+            <div class="page-header">
+                <h2>🏛️ Pantheon V2 Control Panel</h2>
+                <p>Advanced Remote Administration Tool with comprehensive system control</p>
+            </div>
+
+            <!-- Pantheon Dashboard -->
+            <div class="pantheon-dashboard">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-icon">👥</div>
+                        <div class="card-content">
+                            <h3>Active Connections</h3>
+                            <div class="card-value" id="activeConnections">0</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">📊</div>
+                        <div class="card-content">
+                            <h3>System Load</h3>
+                            <div class="card-value" id="systemLoad">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">🔒</div>
+                        <div class="card-content">
+                            <h3>Security Status</h3>
+                            <div class="card-value" id="securityStatus">Protected</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">⚡</div>
+                        <div class="card-content">
+                            <h3>Performance</h3>
+                            <div class="card-value" id="performance">Optimal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Modules -->
+            <div class="control-modules">
+                <h3>Control Modules</h3>
+                <div class="modules-grid">
+                    <div class="module-card" data-module="remote-desktop">
+                        <div class="module-icon">🖥️</div>
+                        <h4>Remote Desktop</h4>
+                        <p>Full desktop control and monitoring</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+
+                    <div class="module-card" data-module="file-manager">
+                        <div class="module-icon">📁</div>
+                        <h4>File Manager</h4>
+                        <p>Advanced file system operations</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+
+                    <div class="module-card" data-module="process-manager">
+                        <div class="module-icon">⚙️</div>
+                        <h4>Process Manager</h4>
+                        <p>System process monitoring and control</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+
+                    <div class="module-card" data-module="registry-editor">
+                        <div class="module-icon">📝</div>
+                        <h4>Registry Editor</h4>
+                        <p>Windows registry manipulation</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+
+                    <div class="module-card" data-module="keylogger">
+                        <div class="module-icon">⌨️</div>
+                        <h4>Keylogger</h4>
+                        <p>Keystroke monitoring and logging</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+
+                    <div class="module-card" data-module="webcam">
+                        <div class="module-icon">📷</div>
+                        <h4>Webcam Control</h4>
+                        <p>Camera access and recording</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+
+                    <div class="module-card" data-module="microphone">
+                        <div class="module-icon">🎤</div>
+                        <h4>Microphone</h4>
+                        <p>Audio recording and monitoring</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+
+                    <div class="module-card" data-module="network-monitor">
+                        <div class="module-icon">🌐</div>
+                        <h4>Network Monitor</h4>
+                        <p>Network traffic analysis</p>
+                        <button class="btn btn-primary module-btn">Launch</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Modules -->
+            <div class="active-modules">
+                <h3>Active Modules</h3>
+                <div id="activeModulesList" class="active-modules-list">
+                    <!-- Active modules will be populated here -->
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="system-info">
+                <h3>Target System Information</h3>
+                <div class="info-grid">
+                    <div class="info-section">
+                        <h4>System Details</h4>
+                        <div class="info-content">
+                            <div class="info-item">
+                                <span class="info-label">OS:</span>
+                                <span class="info-value" id="osInfo">Windows 10 Pro</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Architecture:</span>
+                                <span class="info-value" id="archInfo">x64</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Processor:</span>
+                                <span class="info-value" id="cpuInfo">Intel Core i7-9700K</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Memory:</span>
+                                <span class="info-value" id="memInfo">16 GB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h4>Network Information</h4>
+                        <div class="info-content">
+                            <div class="info-item">
+                                <span class="info-label">IP Address:</span>
+                                <span class="info-value" id="ipInfo">192.168.1.100</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">MAC Address:</span>
+                                <span class="info-value" id="macInfo">00:1B:44:11:3A:B7</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Gateway:</span>
+                                <span class="info-value" id="gatewayInfo">192.168.1.1</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">DNS:</span>
+                                <span class="info-value" id="dnsInfo">8.8.8.8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h4>Security Status</h4>
+                        <div class="info-content">
+                            <div class="info-item">
+                                <span class="info-label">Antivirus:</span>
+                                <span class="info-value status-warning" id="avInfo">Windows Defender</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Firewall:</span>
+                                <span class="info-value status-danger" id="fwInfo">Enabled</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">UAC:</span>
+                                <span class="info-value status-warning" id="uacInfo">Enabled</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Admin Rights:</span>
+                                <span class="info-value status-success" id="adminInfo">Yes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Command Console -->
+            <div class="command-console">
+                <h3>Command Console</h3>
+                <div class="console-container">
+                    <div class="console-output" id="consoleOutput">
+                        <div class="console-line">Pantheon V2 Console Ready</div>
+                        <div class="console-line">Type 'help' for available commands</div>
+                    </div>
+                    <div class="console-input">
+                        <span class="console-prompt">Pantheon></span>
+                        <input type="text" id="commandInput" placeholder="Enter command..." autocomplete="off">
+                        <button id="executeCommand" class="btn btn-success">Execute</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Module Modal -->
+<div id="moduleModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 id="modalTitle">Module Control</h4>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="modalContent">
+                <!-- Module content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    let activeModules = [];
+    let consoleHistory = [];
+    let historyIndex = -1;
+
+    $(document).ready(function () {
+        initializePantheon();
+        setupEventHandlers();
+        updateDashboard();
+        startSystemMonitoring();
+    });
+
+    function initializePantheon() {
+        // Initialize dashboard values
+        $('#activeConnections').text('1');
+        $('#systemLoad').text('23%');
+        $('#securityStatus').text('Protected');
+        $('#performance').text('Optimal');
+
+        // Add welcome message to console
+        addConsoleMessage('Pantheon V2 initialized successfully', 'success');
+        addConsoleMessage('Connected to target system', 'info');
+    }
+
+    function setupEventHandlers() {
+        // Module launch buttons
+        $('.module-btn').on('click', function () {
+            const moduleCard = $(this).closest('.module-card');
+            const moduleName = moduleCard.data('module');
+            launchModule(moduleName);
+        });
+
+        // Command execution
+        $('#executeCommand').on('click', executeConsoleCommand);
+        $('#commandInput').on('keypress', function (e) {
+            if (e.which === 13) {
+                executeConsoleCommand();
+            } else if (e.which === 38) { // Up arrow
+                navigateHistory(-1);
+            } else if (e.which === 40) { // Down arrow
+                navigateHistory(1);
+            }
+        });
+
+        // Modal close
+        $('.close-btn').on('click', function () {
+            $('#moduleModal').hide();
+        });
+
+        // Click outside modal to close
+        $('#moduleModal').on('click', function (e) {
+            if (e.target === this) {
+                $(this).hide();
+            }
+        });
+    }
+
+    function launchModule(moduleName) {
+        const moduleInfo = getModuleInfo(moduleName);
+
+        // Add to active modules if not already active
+        if (!activeModules.find(m => m.name === moduleName)) {
+            const module = {
+                name: moduleName,
+                title: moduleInfo.title,
+                status: 'running',
+                startTime: new Date()
+            };
+            activeModules.push(module);
+            updateActiveModulesList();
+            addConsoleMessage(`Module '${moduleInfo.title}' launched successfully`, 'success');
+        }
+
+        // Show module interface
+        showModuleInterface(moduleName, moduleInfo);
+    }
+
+    function getModuleInfo(moduleName) {
+        const modules = {
+            'remote-desktop': {
+                title: 'Remote Desktop',
+                description: 'Full desktop control and monitoring'
+            },
+            'file-manager': {
+                title: 'File Manager',
+                description: 'Advanced file system operations'
+            },
+            'process-manager': {
+                title: 'Process Manager',
+                description: 'System process monitoring and control'
+            },
+            'registry-editor': {
+                title: 'Registry Editor',
+                description: 'Windows registry manipulation'
+            },
+            'keylogger': {
+                title: 'Keylogger',
+                description: 'Keystroke monitoring and logging'
+            },
+            'webcam': {
+                title: 'Webcam Control',
+                description: 'Camera access and recording'
+            },
+            'microphone': {
+                title: 'Microphone',
+                description: 'Audio recording and monitoring'
+            },
+            'network-monitor': {
+                title: 'Network Monitor',
+                description: 'Network traffic analysis'
+            }
+        };
+
+        return modules[moduleName] || { title: 'Unknown Module', description: 'No description available' };
+    }
+
+    function showModuleInterface(moduleName, moduleInfo) {
+        $('#modalTitle').text(moduleInfo.title);
+
+        let content = '';
+
+        switch (moduleName) {
+            case 'remote-desktop':
+                content = `
+        <div class="module-interface">
+          <div class="module-controls">
+            <button class="btn btn-success">Start Desktop Capture</button>
+            <button class="btn btn-warning">Take Screenshot</button>
+            <button class="btn btn-info">View Live Feed</button>
+          </div>
+          <div class="desktop-preview">
+            <div class="preview-placeholder">Desktop preview will appear here</div>
+          </div>
+        </div>
+      `;
+                break;
+
+            case 'file-manager':
+                content = `
+        <div class="module-interface">
+          <div class="file-browser">
+            <div class="path-bar">
+              <input type="text" value="C:\\" readonly>
+              <button class="btn btn-secondary">Navigate</button>
+            </div>
+            <div class="file-list">
+              <div class="file-item">📁 Program Files</div>
+              <div class="file-item">📁 Users</div>
+              <div class="file-item">📁 Windows</div>
+              <div class="file-item">📄 document.txt</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="btn btn-primary">Download</button>
+            <button class="btn btn-success">Upload</button>
+            <button class="btn btn-danger">Delete</button>
+          </div>
+        </div>
+      `;
+                break;
+
+            case 'keylogger':
+                content = `
+        <div class="module-interface">
+          <div class="keylogger-controls">
+            <button class="btn btn-success">Start Logging</button>
+            <button class="btn btn-danger">Stop Logging</button>
+            <button class="btn btn-info">View Logs</button>
+          </div>
+          <div class="keylog-output">
+            <textarea readonly placeholder="Keylog output will appear here..."></textarea>
+          </div>
+        </div>
+      `;
+                break;
+
+            default:
+                content = `
+        <div class="module-interface">
+          <div class="module-placeholder">
+            <h4>${moduleInfo.title}</h4>
+            <p>${moduleInfo.description}</p>
+            <p>Module interface is being loaded...</p>
+            <div class="loading-spinner"></div>
+          </div>
+        </div>
+      `;
+        }
+
+        $('#modalContent').html(content);
+        $('#moduleModal').show();
+    }
+
+    function updateActiveModulesList() {
+        const container = $('#activeModulesList');
+
+        if (activeModules.length === 0) {
+            container.html('<div class="no-modules">No active modules</div>');
+            return;
+        }
+
+        let html = '';
+        activeModules.forEach((module, index) => {
+            const runtime = Math.floor((new Date() - module.startTime) / 1000);
+            html += `
+      <div class="active-module-item">
+        <div class="module-info">
+          <div class="module-name">${module.title}</div>
+          <div class="module-status">Status: ${module.status} | Runtime: ${runtime}s</div>
+        </div>
+        <div class="module-actions">
+          <button class="btn-small btn-info" onclick="focusModule('${module.name}')">Focus</button>
+          <button class="btn-small btn-danger" onclick="terminateModule(${index})">Terminate</button>
+        </div>
+      </div>
+    `;
+        });
+
+        container.html(html);
+    }
+
+    function focusModule(moduleName) {
+        const moduleInfo = getModuleInfo(moduleName);
+        showModuleInterface(moduleName, moduleInfo);
+    }
+
+    function terminateModule(index) {
+        if (confirm('Are you sure you want to terminate this module?')) {
+            const module = activeModules[index];
+            activeModules.splice(index, 1);
+            updateActiveModulesList();
+            addConsoleMessage(`Module '${module.title}' terminated`, 'warning');
+        }
+    }
+
+    function executeConsoleCommand() {
+        const command = $('#commandInput').val().trim();
+        if (!command) return;
+
+        // Add to history
+        consoleHistory.push(command);
+        historyIndex = consoleHistory.length;
+
+        // Add command to console
+        addConsoleMessage(`Pantheon> ${command}`, 'command');
+
+        // Process command
+        processCommand(command);
+
+        // Clear input
+        $('#commandInput').val('');
+    }
+
+    function processCommand(command) {
+        const parts = command.toLowerCase().split(' ');
+        const cmd = parts[0];
+
+        switch (cmd) {
+            case 'help':
+                addConsoleMessage('Available commands:', 'info');
+                addConsoleMessage('  help - Show this help message', 'info');
+                addConsoleMessage('  sysinfo - Display system information', 'info');
+                addConsoleMessage('  ps - List running processes', 'info');
+                addConsoleMessage('  netstat - Show network connections', 'info');
+                addConsoleMessage('  screenshot - Take a screenshot', 'info');
+                addConsoleMessage('  download <file> - Download a file', 'info');
+                addConsoleMessage('  upload <file> - Upload a file', 'info');
+                addConsoleMessage('  clear - Clear console', 'info');
+                break;
+
+            case 'sysinfo':
+                addConsoleMessage('System Information:', 'info');
+                addConsoleMessage(`OS: ${$('#osInfo').text()}`, 'info');
+                addConsoleMessage(`CPU: ${$('#cpuInfo').text()}`, 'info');
+                addConsoleMessage(`Memory: ${$('#memInfo').text()}`, 'info');
+                addConsoleMessage(`IP: ${$('#ipInfo').text()}`, 'info');
+                break;
+
+            case 'ps':
+                addConsoleMessage('Running Processes:', 'info');
+                addConsoleMessage('PID    Name                CPU%   Memory', 'info');
+                addConsoleMessage('1234   chrome.exe          15.2   256MB', 'info');
+                addConsoleMessage('5678   notepad.exe         0.1    12MB', 'info');
+                addConsoleMessage('9012   explorer.exe        2.3    128MB', 'info');
+                break;
+
+            case 'netstat':
+                addConsoleMessage('Network Connections:', 'info');
+                addConsoleMessage('Proto  Local Address       Foreign Address     State', 'info');
+                addConsoleMessage('TCP    192.168.1.100:80    0.0.0.0:0          LISTENING', 'info');
+                addConsoleMessage('TCP    192.168.1.100:443   0.0.0.0:0          LISTENING', 'info');
+                break;
+
+            case 'screenshot':
+                addConsoleMessage('Taking screenshot...', 'info');
+                setTimeout(() => {
+                    addConsoleMessage('Screenshot saved to: C:\\temp\\screenshot.png', 'success');
+                }, 1000);
+                break;
+
+            case 'clear':
+                $('#consoleOutput').empty();
+                addConsoleMessage('Console cleared', 'info');
+                break;
+
+            default:
+                addConsoleMessage(`Unknown command: ${command}`, 'error');
+                addConsoleMessage('Type "help" for available commands', 'info');
+        }
+    }
+
+    function addConsoleMessage(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const typeClass = `console-${type}`;
+        const html = `<div class="console-line ${typeClass}">[${timestamp}] ${message}</div>`;
+
+        $('#consoleOutput').append(html);
+
+        // Auto-scroll to bottom
+        const output = $('#consoleOutput')[0];
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function navigateHistory(direction) {
+        if (consoleHistory.length === 0) return;
+
+        historyIndex += direction;
+
+        if (historyIndex < 0) {
+            historyIndex = 0;
+        } else if (historyIndex >= consoleHistory.length) {
+            historyIndex = consoleHistory.length;
+            $('#commandInput').val('');
+            return;
+        }
+
+        $('#commandInput').val(consoleHistory[historyIndex]);
+    }
+
+    function updateDashboard() {
+        // Simulate real-time updates
+        setInterval(() => {
+            const load = Math.floor(Math.random() * 30) + 10;
+            $('#systemLoad').text(load + '%');
+
+            const connections = activeModules.length;
+            $('#activeConnections').text(connections);
+
+            // Update active modules list
+            updateActiveModulesList();
+        }, 5000);
+    }
+
+    function startSystemMonitoring() {
+        // Simulate system monitoring
+        setInterval(() => {
+            if (Math.random() > 0.95) {
+                addConsoleMessage('System event detected: New process started', 'warning');
+            }
+
+            if (Math.random() > 0.98) {
+                addConsoleMessage('Network activity: Outbound connection established', 'info');
+            }
+        }, 3000);
+    }
+
+    // Initialize on page load
+    $(document).ready(function () {
+        addConsoleMessage('Pantheon V2 Control Panel loaded successfully', 'success');
+    });
+</script>
+
+<style>
+    .tool-interface {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid #667eea;
+        border-radius: 10px;
+    }
+
+    .page-header h2 {
+        color: #667eea;
+        margin-bottom: 10px;
+        text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
+
+    .pantheon-dashboard {
+        margin-bottom: 30px;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .dashboard-card {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .card-icon {
+        font-size: 2.5em;
+        color: #667eea;
+    }
+
+    .card-content h3 {
+        color: #ccc;
+        margin: 0 0 10px 0;
+        font-size: 1em;
+    }
+
+    .card-value {
+        color: #00ff41;
+        font-size: 1.8em;
+        font-weight: bold;
+    }
+
+    .control-modules {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .control-modules h3 {
+        color: #667eea;
+        margin-bottom: 20px;
+    }
+
+    .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .module-card {
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .module-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .module-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+        color: #667eea;
+    }
+
+    .module-card h4 {
+        color: #fff;
+        margin-bottom: 10px;
+    }
+
+    .module-card p {
+        color: #ccc;
+        font-size: 0.9em;
+        margin-bottom: 15px;
+    }
+
+    .module-btn {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .active-modules {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .active-modules h3 {
+        color: #667eea;
+        margin-bottom: 20px;
+    }
+
+    .active-modules-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .active-module-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #333;
+        border-radius: 8px;
+        border-left: 4px solid #00ff41;
+    }
+
+    .module-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .module-name {
+        color: #00ff41;
+        font-weight: bold;
+    }
+
+    .module-status {
+        color: #ccc;
+        font-size: 12px;
+    }
+
+    .module-actions {
+        display: flex;
+        gap: 5px;
+    }
+
+    .no-modules {
+        text-align: center;
+        color: #666;
+        padding: 20px;
+        font-style: italic;
+    }
+
+    .system-info {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .system-info h3 {
+        color: #667eea;
+        margin-bottom: 20px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .info-section h4 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 5px;
+    }
+
+    .info-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .info-label {
+        color: #ccc;
+        font-weight: bold;
+    }
+
+    .info-value {
+        color: #fff;
+    }
+
+    .status-success {
+        color: #00ff41 !important;
+    }
+
+    .status-warning {
+        color: #ffc107 !important;
+    }
+
+    .status-danger {
+        color: #ff6b35 !important;
+    }
+
+    .command-console {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .command-console h3 {
+        color: #667eea;
+        margin-bottom: 20px;
+    }
+
+    .console-container {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .console-output {
+        height: 300px;
+        overflow-y: auto;
+        padding: 15px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+    }
+
+    .console-line {
+        color: #00ff41;
+        margin-bottom: 5px;
+        word-wrap: break-word;
+    }
+
+    .console-command {
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .console-success {
+        color: #00ff41;
+    }
+
+    .console-error {
+        color: #ff6b35;
+    }
+
+    .console-warning {
+        color: #ffc107;
+    }
+
+    .console-info {
+        color: #17a2b8;
+    }
+
+    .console-input {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        background: #111;
+        border-top: 1px solid #333;
+    }
+
+    .console-prompt {
+        color: #667eea;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .console-input input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        outline: none;
+        margin-right: 10px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        background: #2a2a2a;
+        margin: 2% auto;
+        padding: 0;
+        border: 1px solid #333;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid #333;
+    }
+
+    .modal-header h4 {
+        color: #667eea;
+        margin: 0;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #ccc;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .close-btn:hover {
+        color: #667eea;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .module-interface {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .module-controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .desktop-preview {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 5px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .preview-placeholder {
+        color: #666;
+        font-style: italic;
+    }
+
+    .file-browser {
+        background: #333;
+        border: 1px solid #444;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .path-bar {
+        display: flex;
+        padding: 10px;
+        background: #444;
+        border-bottom: 1px solid #555;
+    }
+
+    .path-bar input {
+        flex: 1;
+        background: #555;
+        border: 1px solid #666;
+        border-radius: 3px;
+        color: #fff;
+        padding: 5px 10px;
+        margin-right: 10px;
+    }
+
+    .file-list {
+        padding: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .file-item {
+        padding: 8px;
+        color: #ccc;
+        cursor: pointer;
+        border-radius: 3px;
+        transition: background 0.3s ease;
+    }
+
+    .file-item:hover {
+        background: #555;
+    }
+
+    .file-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .keylogger-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .keylog-output textarea {
+        width: 100%;
+        height: 200px;
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 5px;
+        color: #00ff41;
+        font-family: 'Courier New', monospace;
+        padding: 10px;
+        resize: vertical;
+    }
+
+    .module-placeholder {
+        text-align: center;
+        padding: 40px;
+        color: #ccc;
+    }
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #333;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .btn-small {
+        padding: 5px 10px;
+        font-size: 12px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-small.btn-info {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-small.btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-small:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modules-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .console-input {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .console-input input {
+            margin-right: 0;
+        }
+
+        .module-controls,
+        .file-actions,
+        .keylogger-controls {
+            flex-direction: column;
+        }
+
+        .modal-content {
+            width: 95%;
+            margin: 5% auto;
+        }
+    }
+
+    /* Animation effects */
+    .dashboard-card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .module-card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Console scrollbar styling */
+    .console-output::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .console-output::-webkit-scrollbar-track {
+        background: #111;
+    }
+
+    .console-output::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+    }
+
+    .console-output::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+{% include "footer.html" %}

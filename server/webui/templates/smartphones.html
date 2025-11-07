@@ -1,0 +1,26 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="container">
+    <h2>Smartphones</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Phone Model</th>
+                <th>Android Version</th>
+                <th>Last Seen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for smartphone in smartphones %}
+            <tr>
+                <td>{{ smartphone.id }}</td>
+                <td>{{ smartphone.phone_model }}</td>
+                <td>{{ smartphone.android_version }}</td>
+                <td>{{ smartphone.last_seen }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

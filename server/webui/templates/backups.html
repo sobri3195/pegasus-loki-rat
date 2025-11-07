@@ -1,0 +1,26 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="container">
+    <h2>Backups</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>File Name</th>
+                <th>File Size</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for backup in backups %}
+            <tr>
+                <td>{{ backup.id }}</td>
+                <td>{{ backup.file_name }}</td>
+                <td>{{ backup.file_size }}</td>
+                <td>{{ backup.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

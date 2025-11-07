@@ -1,0 +1,3 @@
+[submodule "mcp-gateway"]
+	path = mcp-gateway
+	url = https://github.com/anonim-01/mcp-gateway.git

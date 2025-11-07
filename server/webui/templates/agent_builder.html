@@ -1,0 +1,603 @@
+{% with previous_page=url_for('webui.agent_list'), title="Agent Builder" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <section id="main_content">
+        <div class="tool-interface">
+            <!-- Header Section -->
+            <div class="page-header">
+                <h2>🔧 Pegasus Agent Builder</h2>
+                <p>Build custom agent payloads with advanced configuration options</p>
+            </div>
+
+            <!-- Builder Configuration -->
+            <div class="builder-config">
+                <h3>Payload Configuration</h3>
+                <form id="builderForm" class="config-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="payload_type">Payload Type:</label>
+                            <select id="payload_type" name="type" required>
+                                <option value="windows_exe">Windows Executable (.exe)</option>
+                                <option value="windows_dll">Windows DLL (.dll)</option>
+                                <option value="linux_elf">Linux ELF Binary</option>
+                                <option value="android_apk">Android APK</option>
+                                <option value="powershell">PowerShell Script</option>
+                                <option value="python">Python Script</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="architecture">Architecture:</label>
+                            <select id="architecture" name="arch">
+                                <option value="x64">x64 (64-bit)</option>
+                                <option value="x86">x86 (32-bit)</option>
+                                <option value="arm">ARM</option>
+                                <option value="arm64">ARM64</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="server_host">Server Host:</label>
+                            <input type="text" id="server_host" name="host" value="127.0.0.1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="server_port">Server Port:</label>
+                            <input type="number" id="server_port" name="port" value="8080" min="1" max="65535" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="agent_name">Agent Name:</label>
+                        <input type="text" id="agent_name" name="name" placeholder="Custom Agent Name" required>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="advanced-options">
+                        <h4>Advanced Options</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="persistence" checked> Enable Persistence</label>
+                            <label><input type="checkbox" name="anti_vm" checked> Anti-VM Detection</label>
+                            <label><input type="checkbox" name="anti_debug" checked> Anti-Debug Protection</label>
+                            <label><input type="checkbox" name="encryption" checked> Payload Encryption</label>
+                            <label><input type="checkbox" name="obfuscation" checked> Code Obfuscation</label>
+                            <label><input type="checkbox" name="keylogger"> Built-in Keylogger</label>
+                            <label><input type="checkbox" name="screenshot"> Screenshot Capability</label>
+                            <label><input type="checkbox" name="webcam"> Webcam Access</label>
+                        </div>
+                    </div>
+
+                    <!-- Evasion Techniques -->
+                    <div class="evasion-options">
+                        <h4>Evasion Techniques</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sleep_time">Sleep Time (seconds):</label>
+                                <input type="number" id="sleep_time" name="sleep" value="5" min="0" max="3600">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="junk_code">Junk Code Level:</label>
+                                <select id="junk_code" name="junk">
+                                    <option value="none">None</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="icon_file">Custom Icon (optional):</label>
+                            <input type="file" id="icon_file" name="icon" accept=".ico,.png,.jpg">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-icon">🚀</span>
+                            Build Payload
+                        </button>
+                        <button type="button" id="previewConfig" class="btn btn-secondary">
+                            <span class="btn-icon">👁️</span>
+                            Preview Config
+                        </button>
+                        <button type="reset" class="btn btn-warning">
+                            <span class="btn-icon">🔄</span>
+                            Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Build Progress -->
+            <div class="build-progress" id="buildProgress" style="display: none;">
+                <h3>Build Progress</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Initializing build...</div>
+                </div>
+                <div class="build-log" id="buildLog">
+                    <pre id="logOutput">Starting payload build process...</pre>
+                </div>
+            </div>
+
+            <!-- Build Results -->
+            <div class="build-results" id="buildResults" style="display: none;">
+                <h3>Build Results</h3>
+                <div class="results-container">
+                    <div class="result-info">
+                        <div class="info-item">
+                            <span class="info-label">Payload Type:</span>
+                            <span class="info-value" id="resultType">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">File Size:</span>
+                            <span class="info-value" id="resultSize">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Build Time:</span>
+                            <span class="info-value" id="resultTime">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value status-success" id="resultStatus">Success</span>
+                        </div>
+                    </div>
+
+                    <div class="download-section">
+                        <button id="downloadPayload" class="btn btn-success">
+                            <span class="btn-icon">⬇️</span>
+                            Download Payload
+                        </button>
+                        <button id="generateQR" class="btn btn-info">
+                            <span class="btn-icon">📱</span>
+                            Generate QR Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    let buildProcess = null;
+
+    $(document).ready(function () {
+        $('#builderForm').on('submit', function (e) {
+            e.preventDefault();
+            startBuild();
+        });
+
+        $('#previewConfig').on('click', function () {
+            previewConfiguration();
+        });
+
+        // Auto-generate agent name based on type
+        $('#payload_type').on('change', function () {
+            const type = $(this).val();
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '');
+            $('#agent_name').val(`Agent_${type}_${timestamp}`);
+        });
+    });
+
+    function startBuild() {
+        const formData = new FormData($('#builderForm')[0]);
+
+        // Show progress section
+        $('#buildProgress').show();
+        $('#buildResults').hide();
+
+        // Reset progress
+        $('#progressFill').css('width', '0%');
+        $('#progressText').text('Initializing build...');
+        $('#logOutput').text('Starting payload build process...');
+
+        // Simulate build process
+        simulateBuild(formData);
+    }
+
+    function simulateBuild(formData) {
+        const buildSteps = [
+            { progress: 10, text: 'Validating configuration...', log: '[INFO] Configuration validated successfully' },
+            { progress: 20, text: 'Generating payload template...', log: '[INFO] Template generated for ' + formData.get('type') },
+            { progress: 35, text: 'Applying evasion techniques...', log: '[INFO] Anti-VM and anti-debug features enabled' },
+            { progress: 50, text: 'Encrypting payload...', log: '[INFO] Payload encrypted with AES-256' },
+            { progress: 65, text: 'Obfuscating code...', log: '[INFO] Code obfuscation level: ' + formData.get('junk') },
+            { progress: 80, text: 'Compiling binary...', log: '[INFO] Binary compilation in progress...' },
+            { progress: 95, text: 'Finalizing build...', log: '[INFO] Build optimization completed' },
+            { progress: 100, text: 'Build completed!', log: '[SUCCESS] Payload built successfully!' }
+        ];
+
+        let stepIndex = 0;
+        const buildInterval = setInterval(() => {
+            if (stepIndex < buildSteps.length) {
+                const step = buildSteps[stepIndex];
+
+                $('#progressFill').css('width', step.progress + '%');
+                $('#progressText').text(step.text);
+
+                const currentLog = $('#logOutput').text();
+                $('#logOutput').text(currentLog + '\n' + step.log);
+
+                // Auto-scroll log
+                const logContainer = $('#buildLog')[0];
+                logContainer.scrollTop = logContainer.scrollHeight;
+
+                stepIndex++;
+            } else {
+                clearInterval(buildInterval);
+                showBuildResults(formData);
+            }
+        }, 1000);
+    }
+
+    function showBuildResults(formData) {
+        // Hide progress, show results
+        $('#buildProgress').hide();
+        $('#buildResults').show();
+
+        // Populate results
+        $('#resultType').text(formData.get('type'));
+        $('#resultSize').text(Math.floor(Math.random() * 500 + 100) + ' KB');
+        $('#resultTime').text(Math.floor(Math.random() * 30 + 10) + ' seconds');
+        $('#resultStatus').text('Success').removeClass().addClass('info-value status-success');
+
+        // Setup download handlers
+        $('#downloadPayload').off('click').on('click', function () {
+            // In real implementation, this would download the actual payload
+            alert('Payload download started! Check your downloads folder.');
+        });
+
+        $('#generateQR').off('click').on('click', function () {
+            generateQRCode(formData);
+        });
+    }
+
+    function previewConfiguration() {
+        const config = {
+            type: $('#payload_type').val(),
+            architecture: $('#architecture').val(),
+            host: $('#server_host').val(),
+            port: $('#server_port').val(),
+            name: $('#agent_name').val(),
+            options: {
+                persistence: $('input[name="persistence"]').is(':checked'),
+                anti_vm: $('input[name="anti_vm"]').is(':checked'),
+                anti_debug: $('input[name="anti_debug"]').is(':checked'),
+                encryption: $('input[name="encryption"]').is(':checked'),
+                obfuscation: $('input[name="obfuscation"]').is(':checked'),
+                keylogger: $('input[name="keylogger"]').is(':checked'),
+                screenshot: $('input[name="screenshot"]').is(':checked'),
+                webcam: $('input[name="webcam"]').is(':checked')
+            },
+            evasion: {
+                sleep_time: $('#sleep_time').val(),
+                junk_code: $('#junk_code').val()
+            }
+        };
+
+        const configJson = JSON.stringify(config, null, 2);
+        alert('Configuration Preview:\n\n' + configJson);
+    }
+
+    function generateQRCode(formData) {
+        // In real implementation, this would generate a QR code for mobile deployment
+        const qrData = {
+            host: formData.get('host'),
+            port: formData.get('port'),
+            name: formData.get('name')
+        };
+
+        alert('QR Code generated for mobile deployment:\n\n' + JSON.stringify(qrData, null, 2));
+    }
+</script>
+
+<style>
+    .tool-interface {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid #00ff41;
+        border-radius: 6px;
+    }
+
+    .page-header h2 {
+        color: #00ff41;
+        margin-bottom: 8px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        font-size: 1.4em;
+    }
+
+    .page-header p {
+        font-size: 0.9em;
+        margin: 0;
+    }
+
+    .builder-config {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .builder-config h3 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .config-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+    .form-group label {
+        display: block;
+        color: #ccc;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 8px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 13px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #00ff41;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    }
+
+    .advanced-options,
+    .evasion-options {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 12px;
+        margin-top: 10px;
+    }
+
+    .advanced-options h4,
+    .evasion-options h4 {
+        color: #00ff41;
+        margin-bottom: 10px;
+        font-size: 1em;
+    }
+
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 8px;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        color: #ccc;
+        cursor: pointer;
+        font-size: 0.85em;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 6px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .build-progress,
+    .build-results {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .build-progress h3,
+    .build-results h3 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .progress-container {
+        margin-bottom: 15px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #333;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(45deg, #00ff41, #00cc33);
+        transition: width 0.3s ease;
+    }
+
+    .progress-text {
+        color: #00ff41;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+
+    .build-log {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 10px;
+        height: 200px;
+        overflow-y: auto;
+    }
+
+    .build-log pre {
+        color: #00ff41;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        margin: 0;
+        white-space: pre-wrap;
+    }
+
+    .results-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .result-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        background: #333;
+        border-radius: 4px;
+    }
+
+    .info-label {
+        color: #ccc;
+        font-weight: bold;
+        font-size: 0.85em;
+    }
+
+    .info-value {
+        color: #fff;
+        font-size: 0.85em;
+    }
+
+    .status-success {
+        color: #00ff41 !important;
+    }
+
+    .status-error {
+        color: #ff6b35 !important;
+    }
+
+    .download-section {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+
+        .checkbox-group {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions,
+        .download-section {
+            flex-direction: column;
+        }
+
+        .result-info {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        font-size: 0.85em;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #00ff41, #00cc33);
+        color: #000;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-warning {
+        background: linear-gradient(45deg, #ffc107, #ff8f00);
+        color: #000;
+    }
+
+    .btn-success {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .btn-info {
+        background: linear-gradient(45deg, #17a2b8, #138496);
+        color: white;
+    }
+
+    .btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+    }
+
+    .btn-icon {
+        font-size: 1em;
+    }
+</style>
+
+{% include "footer.html" %}

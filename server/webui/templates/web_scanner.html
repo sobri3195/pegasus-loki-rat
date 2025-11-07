@@ -1,0 +1,495 @@
+{% with previous_page=url_for('webui.agent_list'), title="Web Scanner" %}
+{% include "header.html" %}
+{% endwith %}
+
+<div class="container">
+    <section id="main_content">
+        <div class="tool-interface">
+            <!-- Header Section -->
+            <div class="page-header">
+                <h2>🔍 Pegasus Web Scanner</h2>
+                <p>Comprehensive web vulnerability scanner with advanced detection capabilities</p>
+            </div>
+
+            <!-- Scanner Configuration -->
+            <div class="scanner-config">
+                <h3>Scanner Configuration</h3>
+                <form id="scannerForm" class="config-form">
+                    <div class="form-group">
+                        <label for="target_url">Target URL:</label>
+                        <input type="url" id="target_url" name="url" placeholder="https://example.com" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="threads">Threads:</label>
+                            <input type="number" id="threads" name="threads" value="10" min="1" max="50">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="timeout">Timeout (seconds):</label>
+                            <input type="number" id="timeout" name="timeout" value="10" min="1" max="60">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wordlist">Wordlist:</label>
+                        <select id="wordlist" name="wordlist">
+                            <option value="wordlist.txt">Default Wordlist</option>
+                            <option value="common.txt">Common Directories</option>
+                            <option value="admin.txt">Admin Panels</option>
+                            <option value="backup.txt">Backup Files</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="output_format">Output Format:</label>
+                        <select id="output_format" name="format">
+                            <option value="json">JSON</option>
+                            <option value="csv">CSV</option>
+                            <option value="html">HTML Report</option>
+                        </select>
+                    </div>
+
+                    <div class="scan-options">
+                        <h4>Scan Options</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="xss_scan" checked> XSS Detection</label>
+                            <label><input type="checkbox" name="sql_injection" checked> SQL Injection</label>
+                            <label><input type="checkbox" name="directory_bruteforce" checked> Directory Brute
+                                Force</label>
+                            <label><input type="checkbox" name="subdomain_enum" checked> Subdomain Enumeration</label>
+                            <label><input type="checkbox" name="ssl_scan" checked> SSL/TLS Analysis</label>
+                            <label><input type="checkbox" name="header_analysis" checked> Security Headers</label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-icon">🚀</span>
+                            Start Scan
+                        </button>
+                        <button type="button" id="stopScan" class="btn btn-danger" disabled>
+                            <span class="btn-icon">⏹️</span>
+                            Stop Scan
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Scan Results -->
+            <div class="scan-results">
+                <h3>Scan Results</h3>
+                <div class="results-container">
+                    <div id="scanStatus" class="scan-status">
+                        <div class="status-indicator">Ready to scan</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div id="scanOutput" class="scan-output">
+                        <pre id="outputText">No scan results yet. Configure your scan and click "Start Scan".</pre>
+                    </div>
+
+                    <div id="vulnerabilities" class="vulnerabilities-list">
+                        <h4>Detected Vulnerabilities</h4>
+                        <div id="vulnList" class="vuln-items">
+                            <!-- Vulnerabilities will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+    let scanProcess = null;
+    let scanInterval = null;
+
+    $(document).ready(function () {
+        $('#scannerForm').on('submit', function (e) {
+            e.preventDefault();
+            startScan();
+        });
+
+        $('#stopScan').on('click', function () {
+            stopScan();
+        });
+    });
+
+    function startScan() {
+        const formData = {
+            url: $('#target_url').val(),
+            options: {
+                threads: parseInt($('#threads').val()),
+                timeout: parseInt($('#timeout').val()),
+                wordlist: $('#wordlist').val(),
+                format: $('#output_format').val(),
+                xss_scan: $('input[name="xss_scan"]').is(':checked'),
+                sql_injection: $('input[name="sql_injection"]').is(':checked'),
+                directory_bruteforce: $('input[name="directory_bruteforce"]').is(':checked'),
+                subdomain_enum: $('input[name="subdomain_enum"]').is(':checked'),
+                ssl_scan: $('input[name="ssl_scan"]').is(':checked'),
+                header_analysis: $('input[name="header_analysis"]').is(':checked')
+            }
+        };
+
+        // Update UI
+        $('#scanStatus .status-indicator').text('Starting scan...');
+        $('.progress-fill').css('width', '10%');
+        $('#scannerForm button[type="submit"]').prop('disabled', true);
+        $('#stopScan').prop('disabled', false);
+
+        // Launch scanner
+        $.post('/api/tools/web-scanner/launch', formData)
+            .done(function (response) {
+                if (response.success) {
+                    scanProcess = response.process_id;
+                    $('#scanStatus .status-indicator').text('Scan in progress...');
+                    $('.progress-fill').css('width', '50%');
+
+                    // Start monitoring scan progress
+                    scanInterval = setInterval(checkScanProgress, 2000);
+
+                    // Simulate scan output (in real implementation, this would come from the scanner)
+                    simulateScanOutput();
+                } else {
+                    alert('Failed to start scan: ' + response.error);
+                    resetScanUI();
+                }
+            })
+            .fail(function () {
+                alert('Failed to start scan. Please try again.');
+                resetScanUI();
+            });
+    }
+
+    function stopScan() {
+        if (scanInterval) {
+            clearInterval(scanInterval);
+            scanInterval = null;
+        }
+
+        $('#scanStatus .status-indicator').text('Scan stopped');
+        $('.progress-fill').css('width', '0%');
+        resetScanUI();
+    }
+
+    function checkScanProgress() {
+        // In a real implementation, this would check the actual scan progress
+        // For now, we'll simulate progress
+        const currentWidth = parseInt($('.progress-fill').css('width'));
+        const containerWidth = $('.progress-bar').width();
+        const percentage = (currentWidth / containerWidth) * 100;
+
+        if (percentage < 90) {
+            $('.progress-fill').css('width', (percentage + 10) + '%');
+        } else {
+            // Scan completed
+            $('.progress-fill').css('width', '100%');
+            $('#scanStatus .status-indicator').text('Scan completed');
+            clearInterval(scanInterval);
+            resetScanUI();
+        }
+    }
+
+    function simulateScanOutput() {
+        const outputs = [
+            '[INFO] Starting Pegasus Web Scanner...',
+            '[INFO] Target: ' + $('#target_url').val(),
+            '[INFO] Threads: ' + $('#threads').val(),
+            '[SCAN] Checking for common vulnerabilities...',
+            '[SCAN] Testing for XSS vulnerabilities...',
+            '[SCAN] Performing directory brute force...',
+            '[SCAN] Analyzing security headers...',
+            '[VULN] Found potential XSS vulnerability in search parameter',
+            '[VULN] Missing security header: X-Frame-Options',
+            '[INFO] Directory found: /admin',
+            '[INFO] Directory found: /backup',
+            '[SCAN] Testing SSL/TLS configuration...',
+            '[INFO] Scan completed successfully'
+        ];
+
+        let index = 0;
+        const outputInterval = setInterval(function () {
+            if (index < outputs.length) {
+                const currentOutput = $('#outputText').text();
+                $('#outputText').text(currentOutput + '\n' + outputs[index]);
+
+                // Add vulnerability to list if it's a vulnerability
+                if (outputs[index].includes('[VULN]')) {
+                    addVulnerability(outputs[index]);
+                }
+
+                index++;
+
+                // Auto-scroll to bottom
+                $('#scanOutput').scrollTop($('#scanOutput')[0].scrollHeight);
+            } else {
+                clearInterval(outputInterval);
+            }
+        }, 1000);
+    }
+
+    function addVulnerability(vulnText) {
+        const severity = vulnText.includes('XSS') ? 'high' : 'medium';
+        const vulnHtml = `
+    <div class="vuln-item ${severity}">
+      <div class="vuln-severity">${severity.toUpperCase()}</div>
+      <div class="vuln-description">${vulnText.replace('[VULN]', '').trim()}</div>
+    </div>
+  `;
+        $('#vulnList').append(vulnHtml);
+    }
+
+    function resetScanUI() {
+        $('#scannerForm button[type="submit"]').prop('disabled', false);
+        $('#stopScan').prop('disabled', true);
+        scanProcess = null;
+    }
+</script>
+
+<style>
+    .tool-interface {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border: 1px solid #00ff41;
+        border-radius: 6px;
+    }
+
+    .page-header h2 {
+        color: #00ff41;
+        margin-bottom: 8px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        font-size: 1.4em;
+    }
+
+    .page-header p {
+        font-size: 0.9em;
+        margin: 0;
+    }
+
+    .scanner-config {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .scanner-config h3 {
+        color: #00ff41;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+
+    .config-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+    .form-group label {
+        display: block;
+        color: #ccc;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #00ff41;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    }
+
+    .scan-options h4 {
+        color: #00ff41;
+        margin-bottom: 10px;
+    }
+
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        color: #ccc;
+        cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .scan-results {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .scan-results h3 {
+        color: #00ff41;
+        margin-bottom: 20px;
+    }
+
+    .scan-status {
+        margin-bottom: 20px;
+    }
+
+    .status-indicator {
+        color: #00ff41;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #333;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(45deg, #00ff41, #00cc33);
+        transition: width 0.3s ease;
+    }
+
+    .scan-output {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 5px;
+        padding: 15px;
+        height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+
+    .scan-output pre {
+        color: #00ff41;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        margin: 0;
+        white-space: pre-wrap;
+    }
+
+    .vulnerabilities-list h4 {
+        color: #ff6b35;
+        margin-bottom: 15px;
+    }
+
+    .vuln-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border-left: 4px solid;
+    }
+
+    .vuln-item.high {
+        background: rgba(255, 107, 53, 0.1);
+        border-left-color: #ff6b35;
+    }
+
+    .vuln-item.medium {
+        background: rgba(255, 193, 7, 0.1);
+        border-left-color: #ffc107;
+    }
+
+    .vuln-item.low {
+        background: rgba(40, 167, 69, 0.1);
+        border-left-color: #28a745;
+    }
+
+    .vuln-severity {
+        font-weight: bold;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+        margin-right: 10px;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .vuln-item.high .vuln-severity {
+        background: #ff6b35;
+        color: white;
+    }
+
+    .vuln-item.medium .vuln-severity {
+        background: #ffc107;
+        color: black;
+    }
+
+    .vuln-item.low .vuln-severity {
+        background: #28a745;
+        color: white;
+    }
+
+    .vuln-description {
+        color: #ccc;
+        flex: 1;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+
+        .checkbox-group {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+{% include "footer.html" %}

@@ -1,47 +1,452 @@
-{% with custom_header=True %}
+{% with custom_header=True, title="Loki RAT - Secure Access" %}
 {% include "header.html" %}
 {% endwith %}
 
+<div class="login-container">
+  <div class="login-background">
+    <div class="matrix-rain"></div>
+  </div>
 
-      <div class="container">
-<div style="white-space: pre;color: green;font-weight: bold">
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||              (\
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||               \\
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||                ))
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||               //
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||        .-.   //  .-.
-    ||||||||||||||||||||||||||||||||||||||||||||00000000000|||||||||||||||||||||||||||||||||||||||||       / 0 \-((=-/   \
-    |||||||██▓        ▒█████      ██ ▄█▀    ██▓            ██▀███      ▄▄▄         ▄▄▄█████▓ |||||||       \      \\     /
-    |||||||▓██▒       ▒██▒  ██▒    ██▄█▒    ▓██▒           ▓██ ▒ ██▒   ▒████▄       ▓  ██▒ ▓▒|||||||        '( ____))_ )'
-    |||||||▒██░       ▒██░  ██▒   ▓███▄░    ▒██▒           ▓██ ░▄█ ▒   ▒██  ▀█▄     ▒ ▓██░ ▒░|||||||        .-'   //  '-.
-    |||||||▒██░       ▒██   ██░   ▓██ █▄    ░██░           ▒██▀▀█▄     ░██▄▄▄▄██    ░ ▓██▓ ░ |||||||       /     ((      \
-    |||||||░██████▒   ░ ████▓▒░   ▒██▒ █▄   ░██░    ██▓    ░██▓ ▒██▒    ▓█   ▓██▒     ▒██▒ ░ |||||||      |       *       |
-    |||||||░ ▒░▓  ░   ░ ▒░▒░▒░    ▒ ▒▒ ▓▒   ░▓      ▒▓▒    ░ ▒▓ ░▒▓░    ▒▒   ▓▒█░     ▒ ░░   |||||||       \             /
-    |||||||░ ░ ▒  ░     ░ ▒ ▒░    ░ ░▒ ▒░    ▒ ░    ░▒       ░▒ ░ ▒░     ▒   ▒▒ ░       ░    |||||||        \   |_w_|   /
-    |||||||░ ░      ░ ░ ░ ▒     ░ ░░ ░     ▒ ░    ░        ░░   ░      ░   ▒        ░        |||||||        _)  \ ` /  (_
-    |||||||░  ░       ░ ░     ░  ░       ░       ░        ░              ░  ░                |||||||      (((_ _/   \_ _)))
-    |||||||░                                                                                 |||||||
-</div>
-      </div>
-    </header>
-    <div class="container">
-    	<section id="main_content0">
-        <form method="POST">
-        <h2>Password: </h2>
-        <div class="inpu">
-        <input type="password" placeholder="Enter your password" name="password">
-      </div>
-          <br>
-        </br>
-        <div class="but">
-        <input class="submit" type="submit" value="L.o.g.i.n">
-      </div>
-        </form>
+  <div class="login-content">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-ascii">
+          <pre class="ascii-art">
+    ╔══════════════════════════════════════╗
+    ║  ██╗      ██████╗ ██╗  ██╗██╗       ║
+    ║  ██║     ██╔═══██╗██║ ██╔╝██║       ║
+    ║  ██║     ██║   ██║█████╔╝ ██║       ║
+    ║  ██║     ██║   ██║██╔═██╗ ██║       ║
+    ║  ███████╗╚██████╔╝██║  ██╗██║       ║
+    ║  ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝       ║
+    ║                                      ║
+    ║        🐺 REMOTE ACCESS TOOL         ║
+    ╚══════════════════════════════════════╝
+                    </pre>
+        </div>
 
-      </section>
+        <h1 class="login-title">🔐 Secure Access Portal</h1>
+        <p class="login-subtitle">Enter your credentials to access the control panel</p>
+      </div>
+
+      <form method="POST" class="login-form" id="loginForm">
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <span class="label-icon">🔑</span>
+            Authentication Key
+          </label>
+          <div class="input-container">
+            <input type="password" id="password" name="password" placeholder="Enter your secure password..."
+              class="form-input" required autocomplete="current-password">
+            <div class="input-border"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <span class="btn-content">
+            <span class="btn-icon">🚀</span>
+            <span class="btn-text">Access System</span>
+          </span>
+          <div class="btn-loading">
+            <div class="loading-spinner"></div>
+            <span>Authenticating...</span>
+          </div>
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <div class="security-info">
+          <div class="security-item">
+            <span class="security-icon">🛡️</span>
+            <span>Encrypted Connection</span>
+          </div>
+          <div class="security-item">
+            <span class="security-icon">🔒</span>
+            <span>Secure Authentication</span>
+          </div>
+          <div class="security-item">
+            <span class="security-icon">⚡</span>
+            <span>Real-time Access</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
+<style>
+  /* Login Page Specific Styles */
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 2rem;
+  }
 
+  .login-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
 
+  .matrix-rain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+      linear-gradient(90deg, transparent 98%, rgba(0, 255, 65, 0.1) 100%),
+      linear-gradient(180deg, transparent 98%, rgba(0, 255, 65, 0.05) 100%);
+    background-size: 20px 20px;
+    animation: matrixScroll 20s linear infinite;
+  }
+
+  @keyframes matrixScroll {
+    0% {
+      transform: translateY(-100%);
+    }
+
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
+  .login-content {
+    width: 100%;
+    max-width: 500px;
+    z-index: 10;
+  }
+
+  .login-card {
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow:
+      0 0 50px rgba(0, 255, 65, 0.3),
+      inset 0 0 50px rgba(0, 255, 65, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color), var(--primary-color));
+    border-radius: 20px;
+    z-index: -1;
+    animation: borderGlow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes borderGlow {
+    0% {
+      opacity: 0.5;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .ascii-art {
+    font-size: 0.6rem;
+    line-height: 1;
+    color: var(--primary-color);
+    margin: 0 0 1rem 0;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+    font-family: 'Courier New', monospace;
+  }
+
+  .login-title {
+    font-size: 2rem;
+    margin: 1rem 0 0.5rem 0;
+    color: var(--primary-color);
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+    animation: titlePulse 2s ease-in-out infinite alternate;
+  }
+
+  .login-subtitle {
+    color: var(--text-secondary);
+    margin: 0 0 2rem 0;
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+
+  .login-form {
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 2rem;
+  }
+
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .label-icon {
+    font-size: 1.2rem;
+  }
+
+  .input-container {
+    position: relative;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: rgba(10, 10, 10, 0.8);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-family: 'Fira Code', monospace;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow:
+      0 0 20px rgba(0, 255, 65, 0.3),
+      inset 0 0 20px rgba(0, 255, 65, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .form-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+  }
+
+  .input-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color)) border-box;
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+
+  .form-input:focus+.input-border {
+    opacity: 1;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 1.2rem 2rem;
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    border: none;
+    border-radius: 12px;
+    color: var(--bg-dark);
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 10px 30px rgba(0, 255, 65, 0.4),
+      0 0 50px rgba(0, 255, 65, 0.2);
+  }
+
+  .login-btn:active {
+    transform: translateY(-1px);
+  }
+
+  .btn-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(10, 10, 10, 0.3);
+    border-top: 2px solid var(--bg-dark);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .login-btn.loading .btn-content {
+    opacity: 0;
+  }
+
+  .login-btn.loading .btn-loading {
+    opacity: 1;
+  }
+
+  .login-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+  }
+
+  .security-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .security-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  .security-icon {
+    font-size: 1.2rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .login-container {
+      padding: 1rem;
+    }
+
+    .login-card {
+      padding: 2rem 1.5rem;
+    }
+
+    .ascii-art {
+      font-size: 0.5rem;
+    }
+
+    .login-title {
+      font-size: 1.5rem;
+    }
+
+    .security-info {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+  }
+
+  /* Animation for form appearance */
+  .login-card {
+    animation: slideInUp 0.8s ease-out;
+  }
+
+  @keyframes slideInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const passwordInput = document.getElementById('password');
+
+    // Add loading state on form submit
+    loginForm.addEventListener('submit', function (e) {
+      loginBtn.classList.add('loading');
+      loginBtn.disabled = true;
+
+      // Remove loading state after 3 seconds if still on page
+      setTimeout(() => {
+        loginBtn.classList.remove('loading');
+        loginBtn.disabled = false;
+      }, 3000);
+    });
+
+    // Add enter key support
+    passwordInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        loginForm.submit();
+      }
+    });
+
+    // Focus password input on page load
+    passwordInput.focus();
+
+    // Add typing effect to placeholder
+    const originalPlaceholder = passwordInput.placeholder;
+    let placeholderIndex = 0;
+    let isDeleting = false;
+
+    function typePlaceholder() {
+      if (!document.activeElement === passwordInput && passwordInput.value === '') {
+        if (!isDeleting && placeholderIndex < originalPlaceholder.length) {
+          passwordInput.placeholder = originalPlaceholder.substring(0, placeholderIndex + 1);
+          placeholderIndex++;
+        } else if (isDeleting && placeholderIndex > 0) {
+          passwordInput.placeholder = originalPlaceholder.substring(0, placeholderIndex - 1);
+          placeholderIndex--;
+        } else {
+          isDeleting = !isDeleting;
+        }
+      }
+    }
+
+    // Start placeholder animation
+    setInterval(typePlaceholder, 100);
+  });
+</script>
 
 {% include "footer.html" %}
